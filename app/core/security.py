@@ -5,9 +5,10 @@ Roles form a strict hierarchy: reader < curator < admin.
   * curator — everything a reader can, plus ingesting documents
   * admin   — everything, plus index management; bypasses ACL filtering
 
-In local mode, requests WITHOUT an Authorization header get a dev admin
-principal so the quickstart works with plain curl. Any presented token is
-always verified, in every mode.
+Anonymous requests are rejected unless ALLOW_ANONYMOUS_DEV_ADMIN=true is
+set explicitly (local mode only; refused at startup in azure mode), which
+grants a dev admin principal so the quickstart works with plain curl. Any
+presented token is always verified, in every mode.
 """
 
 import datetime as dt
@@ -70,8 +71,9 @@ async def get_current_principal(
 ) -> Principal:
     auth = request.headers.get("Authorization", "")
     if not auth:
-        if settings.mode == "local":
-            # Frictionless quickstart; production (azure mode) always requires a token.
+        if settings.mode == "local" and settings.allow_anonymous_dev_admin:
+            # Frictionless quickstart — but only when explicitly opted in;
+            # config refuses to start with this flag set in azure mode.
             return Principal(sub="dev-user", role="admin", groups=["everyone"])
         raise HTTPException(status_code=401, detail="missing bearer token")
     scheme, _, token = auth.partition(" ")

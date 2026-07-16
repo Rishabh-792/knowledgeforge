@@ -63,7 +63,10 @@ def chat(
 ) -> ChatResponse:
     safety.check(body.message)
     session_id = body.session_id or uuid.uuid4().hex[:12]
-    history = sessions.get(session_id)
+    # Sessions are namespaced by principal so a guessed/leaked session_id
+    # can never read or extend another user's history.
+    session_key = f"{principal.sub}:{session_id}"
+    history = sessions.get(session_key)
 
     if body.use_agent:
         result = agent.run(body.message, principal.acl_groups)
@@ -74,8 +77,8 @@ def chat(
         citations = [Citation(**c) for c in rag_answer.citations]
         steps = []
 
-    sessions.append(session_id, "user", body.message)
-    sessions.append(session_id, "assistant", answer)
+    sessions.append(session_key, "user", body.message)
+    sessions.append(session_key, "assistant", answer)
     return ChatResponse(
         session_id=session_id, answer=answer, citations=citations, agent_steps=steps
     )

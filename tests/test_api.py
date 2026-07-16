@@ -95,3 +95,35 @@ def test_invalid_token_rejected(client):
         headers={"Authorization": "Bearer not-a-real-token"},
     )
     assert response.status_code == 401
+
+
+def test_anonymous_rejected_unless_opted_in(client):
+    # ALLOW_ANONYMOUS_DEV_ADMIN defaults to false: no token, no access.
+    response = client.post("/api/search", json={"query": "anything"})
+    assert response.status_code == 401
+
+
+def test_chat_sessions_are_isolated_per_user(client, curator_headers, reader_headers):
+    client.post("/api/ingest/text", json=DOC, headers=curator_headers)
+    first = client.post(
+        "/api/chat",
+        json={"message": "How often is password rotation required?"},
+        headers=curator_headers,
+    )
+    session_id = first.json()["session_id"]
+    # A different principal reusing the same session_id must get fresh history.
+    from app.api.routes.chat import get_session_store
+
+    curator_key = f"curator@test:{session_id}"
+    reader_key = f"reader@test:{session_id}"
+    client.post(
+        "/api/chat",
+        json={"message": "and for regular accounts?", "session_id": session_id},
+        headers=reader_headers,
+    )
+    store = get_session_store()
+    assert store.get(curator_key), "owner history should exist"
+    assert all(
+        m["content"] != "How often is password rotation required?"
+        for m in store.get(reader_key)
+    ), "another user's messages must not leak into this session"

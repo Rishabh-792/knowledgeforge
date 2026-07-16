@@ -7,7 +7,10 @@ runs in "azure" mode, otherwise it runs fully local with mock backends.
 
 from functools import lru_cache
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_DEV_JWT_SECRET = "dev-only-secret-change-me-please-0123456789"
 
 
 class Settings(BaseSettings):
@@ -16,9 +19,12 @@ class Settings(BaseSettings):
     # Application
     app_name: str = "KnowledgeForge"
     log_level: str = "INFO"
-    jwt_secret: str = "dev-only-secret-change-me-please-0123456789"
+    jwt_secret: str = _DEV_JWT_SECRET
     jwt_algorithm: str = "HS256"
     jwt_ttl_minutes: int = 60
+    # Opt-in ONLY: lets tokenless requests act as a dev admin for the local
+    # quickstart. Refused outright in azure mode (see validator below).
+    allow_anonymous_dev_admin: bool = False
 
     # Retrieval tuning
     chunk_size: int = 800
@@ -63,6 +69,22 @@ class Settings(BaseSettings):
             ]
         )
         return "azure" if azure_ready else "local"
+
+    @model_validator(mode="after")
+    def _enforce_production_auth(self) -> "Settings":
+        """Fail fast instead of running azure mode with dev-grade auth."""
+        if self.mode == "azure":
+            if self.jwt_secret == _DEV_JWT_SECRET or len(self.jwt_secret) < 32:
+                raise ValueError(
+                    "JWT_SECRET must be set to a strong value (>= 32 chars) "
+                    "when Azure credentials are configured"
+                )
+            if self.allow_anonymous_dev_admin:
+                raise ValueError(
+                    "ALLOW_ANONYMOUS_DEV_ADMIN must be false "
+                    "when Azure credentials are configured"
+                )
+        return self
 
 
 @lru_cache

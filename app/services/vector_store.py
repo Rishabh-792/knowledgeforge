@@ -19,6 +19,20 @@ logger = logging.getLogger(__name__)
 
 PUBLIC_GROUP = "public"
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
+_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9_.-]{1,128}$")
+
+
+def _odata_literal(value: str) -> str:
+    """Quote a string literal for an OData filter (single quotes doubled)."""
+    return "'" + value.replace("'", "''") + "'"
+
+
+def _safe_ids(values: list[str]) -> list[str]:
+    """Reject identifiers that could smuggle OData syntax or delimiters."""
+    for v in values:
+        if not _SAFE_ID_RE.match(v):
+            raise ValueError(f"unsafe identifier in search filter: {v!r}")
+    return values
 
 
 @dataclass
@@ -186,10 +200,10 @@ class AzureAISearchStore:
 
         filters = []
         if allowed_groups is not None:
-            groups = ",".join([PUBLIC_GROUP, *allowed_groups])
-            filters.append(f"acl_groups/any(g: search.in(g, '{groups}', ','))")
+            groups = ",".join(_safe_ids([PUBLIC_GROUP, *allowed_groups]))
+            filters.append(f"acl_groups/any(g: search.in(g, {_odata_literal(groups)}, ','))")
         if category:
-            filters.append(f"category eq '{category}'")
+            filters.append(f"category eq {_odata_literal(category)}")
         try:
             pager = self._client.search(
                 search_text=query,  # BM25 leg of the hybrid query
@@ -221,10 +235,10 @@ class AzureAISearchStore:
             raise UpstreamServiceError(f"search query failed: {exc}") from exc
 
     def delete_document(self, doc_id: str) -> int:
-        return self._delete_by_filter(f"doc_id eq '{doc_id}'")
+        return self._delete_by_filter(f"doc_id eq {_odata_literal(doc_id)}")
 
     def delete_category(self, category: str) -> int:
-        return self._delete_by_filter(f"category eq '{category}'")
+        return self._delete_by_filter(f"category eq {_odata_literal(category)}")
 
     def _delete_by_filter(self, odata_filter: str) -> int:
         try:

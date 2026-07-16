@@ -107,10 +107,10 @@ Expected output (abridged):
   answer : (14 + 90) * 2 = 208
 ```
 
-Then run the API (or `docker compose up`):
+Then run the API (or `docker compose up`, which sets the same flag):
 
 ```bash
-uvicorn app.main:app --reload
+ALLOW_ANONYMOUS_DEV_ADMIN=true uvicorn app.main:app --reload
 ```
 
 ```bash
@@ -128,9 +128,11 @@ curl -X POST http://localhost:8000/api/chat \
 # {"session_id":"...","answer":"Password rotation is required every ninety days for privileged accounts. ...","citations":[{"ref":1,"doc_id":"3f9c...","title":"Password Policy","score":0.53}], ...}
 ```
 
-In local mode, requests without a token get a dev admin principal so the
-curl examples above just work. Presented tokens are always verified — the
-RBAC tests mint real JWTs for each role.
+Anonymous access is **opt-in**: with `ALLOW_ANONYMOUS_DEV_ADMIN=true` (local
+mode only — startup fails if it's combined with Azure credentials), tokenless
+requests get a dev admin principal so the curl examples above just work.
+Presented tokens are always verified — the RBAC tests mint real JWTs for
+each role.
 
 ## Local mode vs Azure mode
 
@@ -145,7 +147,7 @@ The mode is **derived, not configured**: if the four `AZURE_OPENAI_*` /
 | Chat | Extractive mock (answers only from retrieved chunks) | Azure OpenAI chat deployment |
 | PII | Regex redactor | Azure AI Language |
 | Content safety | Keyword gate | Azure Content Safety |
-| Auth | JWT; anonymous ⇒ dev admin | JWT required |
+| Auth | JWT; anonymous dev admin (explicit opt-in) | JWT required, strong `JWT_SECRET` enforced |
 
 The local fallbacks are functional, not stubs — the whole pipeline, including
 every security control, executes end to end offline. Azure mode additionally
@@ -158,7 +160,8 @@ All settings load from the environment / `.env`
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `JWT_SECRET` | dev-only placeholder | HS256 signing key for API tokens (>= 32 bytes) |
+| `JWT_SECRET` | dev-only placeholder | HS256 signing key; a strong value is enforced at startup in azure mode |
+| `ALLOW_ANONYMOUS_DEV_ADMIN` | `false` | Local quickstart only: tokenless requests act as dev admin; refused in azure mode |
 | `CHUNK_SIZE` / `CHUNK_OVERLAP` | `800` / `150` | Chunker geometry (characters) |
 | `RETRIEVAL_TOP_K` | `5` | Chunks fed to the LLM per question |
 | `AGENT_MAX_ITERATIONS` | `4` | Hard stop for the agent loop |

@@ -8,6 +8,9 @@ services:
         required: false
     environment:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # Quickstart convenience for the LOCAL demo only: tokenless requests act
+      # as a dev admin. The app refuses to start with this set in azure mode.
+      ALLOW_ANONYMOUS_DEV_ADMIN: ${ALLOW_ANONYMOUS_DEV_ADMIN:-true}
 
   # Optional local vector database for experimentation:
   #   docker compose --profile qdrant up
