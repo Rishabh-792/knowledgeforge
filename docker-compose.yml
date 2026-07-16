@@ -1,0 +1,25 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+  # Optional local vector database for experimentation:
+  #   docker compose --profile qdrant up
+  # (a Qdrant adapter for the VectorStore protocol is on the roadmap;
+  # local mode uses the in-memory store either way)
+  qdrant:
+    image: qdrant/qdrant:v1.9.2
+    profiles: ["qdrant"]
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant-data:/qdrant/storage
+
+volumes:
+  qdrant-data:

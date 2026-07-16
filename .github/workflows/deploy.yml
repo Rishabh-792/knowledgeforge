@@ -1,0 +1,42 @@
+name: Deploy
+
+# Build the API container, push to Azure Container Registry, deploy to
+# App Service. Requires repository secrets:
+#   AZURE_CREDENTIALS  - service principal JSON for azure/login
+#   ACR_LOGIN_SERVER   - e.g. kforgedevacr.azurecr.io
+#   WEBAPP_NAME        - e.g. kforge-dev-api
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push image
+        run: |
+          IMAGE="${{ secrets.ACR_LOGIN_SERVER }}/knowledgeforge:${{ github.sha }}"
+          az acr login --name "${{ secrets.ACR_LOGIN_SERVER }}"
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
+          echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
+
+      - name: Deploy to App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.WEBAPP_NAME }}
+          images: ${{ env.IMAGE }}
+
+      - name: Smoke check
+        run: |
+          sleep 30
+          curl --fail "https://${{ secrets.WEBAPP_NAME }}.azurewebsites.net/healthz"
