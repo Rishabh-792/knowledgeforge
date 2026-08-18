@@ -31,6 +31,11 @@ _ALLOWED_OPS = {
     ast.UAdd: operator.pos,
 }
 
+# Bounds on exponentiation. Generous enough for any arithmetic a user would
+# actually ask, small enough that the result cannot exhaust memory.
+_MAX_EXPONENT = 64
+_MAX_POW_BASE = 1_000_000
+
 
 def calculator(expression: str) -> str:
     """Safely evaluate arithmetic via the AST — no eval(), no builtins."""
@@ -41,14 +46,25 @@ def calculator(expression: str) -> str:
         if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
             return node.value
         if isinstance(node, ast.BinOp) and type(node.op) in _ALLOWED_OPS:
-            return _ALLOWED_OPS[type(node.op)](_eval(node.left), _eval(node.right))
+            left, right = _eval(node.left), _eval(node.right)
+            # Python ints are arbitrary-precision, so 9**9**9**9 parses fine and
+            # then burns CPU and memory without bound. Any authenticated reader
+            # can send it through /api/chat.
+            if isinstance(node.op, ast.Pow) and (
+                abs(right) > _MAX_EXPONENT or abs(left) > _MAX_POW_BASE
+            ):
+                raise ValueError(
+                    f"exponent out of range (max base {_MAX_POW_BASE}, "
+                    f"max exponent {_MAX_EXPONENT})"
+                )
+            return _ALLOWED_OPS[type(node.op)](left, right)
         if isinstance(node, ast.UnaryOp) and type(node.op) in _ALLOWED_OPS:
             return _ALLOWED_OPS[type(node.op)](_eval(node.operand))
         raise ValueError(f"unsupported expression element: {type(node).__name__}")
 
     try:
         result = _eval(ast.parse(expression.strip(), mode="eval"))
-    except (SyntaxError, ValueError, ZeroDivisionError) as exc:
+    except (SyntaxError, ValueError, ZeroDivisionError, OverflowError, RecursionError) as exc:
         return f"calculator error: {exc}"
     return str(round(result, 6)) if isinstance(result, float) else str(result)
 

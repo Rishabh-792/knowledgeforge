@@ -13,13 +13,23 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.100"
+      version = "~> 4.0"
     }
   }
 }
 
 provider "azurerm" {
   features {}
+  # Required from azurerm 4.0 onward. `terraform validate` does not configure
+  # the provider, so a missing value passes CI and then fails on the first real
+  # plan — set it here or via ARM_SUBSCRIPTION_ID.
+  subscription_id = var.subscription_id
+}
+
+variable "subscription_id" {
+  type        = string
+  default     = null
+  description = "Azure subscription ID. Falls back to ARM_SUBSCRIPTION_ID when null."
 }
 
 variable "env" {
@@ -99,10 +109,10 @@ module "appservice" {
   tags                       = local.tags
   log_analytics_workspace_id = module.loganalytics.workspace_id
   app_settings = {
-    AZURE_SEARCH_ENDPOINT  = module.search.endpoint
-    AZURE_SEARCH_API_KEY   = module.keyvault.secret_references["azure-search-api-key"]
-    AZURE_OPENAI_ENDPOINT  = module.openai.endpoint
-    AZURE_OPENAI_API_KEY   = module.keyvault.secret_references["azure-openai-api-key"]
+    AZURE_SEARCH_ENDPOINT                 = module.search.endpoint
+    AZURE_SEARCH_API_KEY                  = module.keyvault.secret_references["azure-search-api-key"]
+    AZURE_OPENAI_ENDPOINT                 = module.openai.endpoint
+    AZURE_OPENAI_API_KEY                  = module.keyvault.secret_references["azure-openai-api-key"]
     APPLICATIONINSIGHTS_CONNECTION_STRING = module.loganalytics.app_insights_connection_string
   }
 }

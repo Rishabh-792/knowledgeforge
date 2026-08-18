@@ -11,6 +11,8 @@ from typing import Protocol
 
 from app.core.exceptions import UpstreamServiceError
 
+from .text import tokenize
+
 Message = dict[str, str]  # {"role": "system"|"user"|"assistant", "content": str}
 
 NO_ANSWER = "I could not find an answer to that in the indexed documents."
@@ -19,11 +21,10 @@ _STOPWORDS = frozenset(
     "a an and are as at be but by do does for from has have how i in is it of on "
     "or that the this to was we what when where which who why will with you your".split()
 )
-_TOKEN_RE = re.compile(r"[a-z0-9]+")
 
 
 def _tokens(text: str) -> set[str]:
-    return {t for t in _TOKEN_RE.findall(text.lower()) if t not in _STOPWORDS}
+    return {t for t in tokenize(text) if t not in _STOPWORDS}
 
 
 class LLM(Protocol):

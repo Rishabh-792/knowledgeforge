@@ -9,7 +9,7 @@
 import logging
 import re
 from dataclasses import dataclass
-from typing import Protocol
+from typing import ClassVar, Protocol
 
 from app.core.exceptions import UpstreamServiceError
 
@@ -29,8 +29,8 @@ class PIIRedactor(Protocol):
 class RegexRedactor:
     """Deterministic pattern-based redaction; local-mode default."""
 
-    # ponytail: regexes catch the obvious 90%; entity-model redaction is the Azure path.
-    PATTERNS: dict[str, re.Pattern] = {
+    # NOTE: regexes catch the obvious 90%; entity-model redaction is the Azure path.
+    PATTERNS: ClassVar[dict[str, re.Pattern]] = {
         "email": re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b"),
         "phone": re.compile(r"\+?\d[\d\s().-]{8,}\d"),
         "national_id": re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),

@@ -1,0 +1,182 @@
+[
+  {
+    "id": "q01",
+    "question": "If we sign up for the top Atlas plan, what availability is promised and do we get anything back when it is missed?",
+    "expected_doc": "atlas-product-faq",
+    "answer_contains": ["99.9 percent", "service credits"]
+  },
+  {
+    "id": "q02",
+    "question": "How long does Atlas hold on to vehicle telemetry before it gets aggregated and anonymized?",
+    "expected_doc": "atlas-product-faq",
+    "answer_contains": ["thirteen months"]
+  },
+  {
+    "id": "q03",
+    "question": "What is the biggest fleet the entry-level Atlas plan can handle?",
+    "expected_doc": "atlas-product-faq",
+    "answer_contains": ["twenty-five vehicles"]
+  },
+  {
+    "id": "q04",
+    "question": "How long can I stay connected on the VPN before I have to authenticate again?",
+    "expected_doc": "it-security-policy",
+    "answer_contains": ["twelve hours"]
+  },
+  {
+    "id": "q05",
+    "question": "Someone took my work laptop off a train. How fast do I have to tell the company?",
+    "expected_doc": "it-security-policy",
+    "answer_contains": ["within four hours"]
+  },
+  {
+    "id": "q06",
+    "question": "What happens to a permission if my manager never signs off on it during the periodic entitlement check?",
+    "expected_doc": "it-security-policy",
+    "answer_contains": ["fourteen days", "revoked"]
+  },
+  {
+    "id": "q07",
+    "question": "By what date do I need my bank details in the HR portal to get paid in my first month?",
+    "expected_doc": "onboarding-guide",
+    "answer_contains": ["fifteenth"]
+  },
+  {
+    "id": "q08",
+    "question": "Roughly how long should I set aside to get my dev machine set up with the platform team's script?",
+    "expected_doc": "onboarding-guide",
+    "answer_contains": ["forty minutes"]
+  },
+  {
+    "id": "q09",
+    "question": "How many days of annual leave does a Larkspur employee earn in a year?",
+    "expected_doc": "onboarding-guide",
+    "answer_contains": ["twenty-two"]
+  },
+  {
+    "id": "q10",
+    "question": "I am travelling overseas next week. What is my daily food allowance?",
+    "expected_doc": "expense-and-travel-policy",
+    "answer_contains": ["ninety-four dollars"]
+  },
+  {
+    "id": "q11",
+    "question": "How much time do I have after getting back from a trip to file my claim?",
+    "expected_doc": "expense-and-travel-policy",
+    "answer_contains": ["forty-five calendar days"]
+  },
+  {
+    "id": "q12",
+    "question": "Is there ever a situation where I can fly at the front of the plane on company money?",
+    "expected_doc": "expense-and-travel-policy",
+    "answer_contains": ["eleven hours", "vice-president approval"]
+  },
+  {
+    "id": "q13",
+    "question": "During a total outage, how frequently do we have to tell people what is going on?",
+    "expected_doc": "incident-response-runbook",
+    "answer_contains": ["every thirty minutes"]
+  },
+  {
+    "id": "q14",
+    "question": "Nobody picked up the page. How long before it jumps to the next person in line?",
+    "expected_doc": "incident-response-runbook",
+    "answer_contains": ["eight minutes"]
+  },
+  {
+    "id": "q15",
+    "question": "Once the worst class of incident is resolved, what is the deadline for the written retrospective?",
+    "expected_doc": "incident-response-runbook",
+    "answer_contains": ["three business days"]
+  },
+  {
+    "id": "q16",
+    "question": "Who has the authority to freeze deletions when litigation is expected?",
+    "expected_doc": "data-retention-standard",
+    "answer_contains": ["general counsel"]
+  },
+  {
+    "id": "q17",
+    "question": "How far back can we restore from the nightly incremental backups?",
+    "expected_doc": "data-retention-standard",
+    "answer_contains": ["thirty-five days"]
+  },
+  {
+    "id": "q18",
+    "question": "How do we actually get rid of data that lives in an encrypted store?",
+    "expected_doc": "data-retention-standard",
+    "answer_contains": ["crypto-shredding"]
+  },
+  {
+    "id": "q19",
+    "question": "What did the multi-depot balancing work do to how fast plans are computed?",
+    "expected_doc": "atlas-release-notes",
+    "answer_contains": ["thirty-eight percent"]
+  },
+  {
+    "id": "q20",
+    "question": "If our endpoint is down, how many times will Atlas try to redeliver an event before parking it?",
+    "expected_doc": "atlas-release-notes",
+    "answer_contains": ["six attempts"]
+  },
+  {
+    "id": "q21",
+    "question": "A driver is going into a dead zone all afternoon. How much routing data does the phone keep locally?",
+    "expected_doc": "atlas-release-notes",
+    "answer_contains": ["seventy-two hours"]
+  },
+  {
+    "id": "q22",
+    "question": "How much time do I need to put in at the company before I can take an extended paid break?",
+    "expected_doc": "benefits-and-leave-guide",
+    "answer_contains": ["seven years of continuous service"]
+  },
+  {
+    "id": "q23",
+    "question": "My partner and I are expecting, and I will be the main carer. How much paid time off do I get?",
+    "expected_doc": "benefits-and-leave-guide",
+    "answer_contains": ["sixteen weeks"]
+  },
+  {
+    "id": "q24",
+    "question": "If I pick the high-deductible medical option, what does Larkspur put into my savings account each year for single cover?",
+    "expected_doc": "benefits-and-leave-guide",
+    "answer_contains": ["one thousand two hundred dollars"]
+  },
+  {
+    "id": "q25",
+    "question": "We want to buy a tool that will cost about fifty thousand a year. How many bids do we need?",
+    "expected_doc": "procurement-and-vendor-policy",
+    "answer_contains": ["three competitive quotes"]
+  },
+  {
+    "id": "q26",
+    "question": "A supplier says filling in our long security form is too much work. What evidence can they hand over instead?",
+    "expected_doc": "procurement-and-vendor-policy",
+    "answer_contains": ["soc 2 type ii"]
+  },
+  {
+    "id": "q27",
+    "question": "How quickly do we normally pay supplier invoices?",
+    "expected_doc": "procurement-and-vendor-policy",
+    "answer_contains": ["net forty-five days"]
+  },
+  {
+    "id": "q28",
+    "question": "What extra pay do I get for carrying the pager as the first responder for a week?",
+    "expected_doc": "engineering-oncall-handbook",
+    "answer_contains": ["nine hundred dollars"]
+  },
+  {
+    "id": "q29",
+    "question": "What day of the week does the pager change hands, and how often can the same person be rostered?",
+    "expected_doc": "engineering-oncall-handbook",
+    "answer_contains": ["wednesday", "five-week cycle"]
+  },
+  {
+    "id": "q30",
+    "question": "What happens to a monitor that keeps waking people up but never leads to a fix?",
+    "expected_doc": "engineering-oncall-handbook",
+    "answer_contains": ["three times in a single week", "muted"]
+  }
+]

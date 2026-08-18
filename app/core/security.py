@@ -41,7 +41,7 @@ def create_access_token(
 ) -> str:
     if role not in ROLE_RANK:
         raise ValueError(f"unknown role: {role}")
-    now = dt.datetime.now(dt.timezone.utc)
+    now = dt.datetime.now(dt.UTC)
     claims = {
         "sub": sub,
         "role": role,

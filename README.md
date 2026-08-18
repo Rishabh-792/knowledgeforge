@@ -2,7 +2,7 @@
 
 **An Azure-native enterprise knowledge platform: ingestion → hybrid retrieval → RAG chat, with document-level RBAC, PII redaction, and content safety built into the pipeline — and a credential-free local mode so the whole thing runs on your laptop.**
 
-![CI](https://img.shields.io/badge/CI-passing-brightgreen)
+[![CI](https://github.com/Rishabh-792/knowledgeforge/actions/workflows/ci.yml/badge.svg)](https://github.com/Rishabh-792/knowledgeforge/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Mode](https://img.shields.io/badge/runs%20offline-yes-8A2BE2)
@@ -12,10 +12,11 @@
 Enterprise knowledge lives in a hundred places — wikis, policy PDFs, shared
 drives, product docs — and most RAG demos ignore the part that actually makes
 enterprise search hard: **not everyone is allowed to see everything**. This
-repository is a production-grade reference implementation that treats
-security as part of the retrieval pipeline, not an afterthought: ACL filtering
-happens inside the index query, PII is redacted before anything is embedded,
-and a content-safety gate fronts both ingestion and chat.
+repository is a reference implementation that treats security as part of the
+retrieval pipeline, not an afterthought: ACL filtering happens inside the index
+query, PII is redacted before anything is embedded, and a content-safety gate
+fronts both ingestion and chat. It is not production infrastructure — the local
+retrieval path is a documented linear scan and sessions are in-memory.
 
 The second problem with reference implementations is that they demand a cloud
 bill before they run. KnowledgeForge doesn't: every Azure dependency has a
@@ -83,24 +84,24 @@ pip install -r requirements-dev.txt
 python scripts/demo.py
 ```
 
-Expected output (abridged):
+It seeds all 10 sample documents (51 chunks), then runs a hybrid search, a
+grounded chat answer with citations, and an agent calculation. Shape of the
+output:
 
 ```text
 == KnowledgeForge demo (mode: local) ==
 
 [1/4] Seeding sample documents...
-  indexed atlas-product-faq.md: 4 chunks, 0 PII redactions
-  indexed it-security-policy.md: 5 chunks, 1 PII redactions
-  indexed onboarding-guide.md: 4 chunks, 3 PII redactions
+  indexed <name>.md: <n> chunks, <n> PII redactions
+  ... one line per document
 
 [2/4] Hybrid search: 'how often is password rotation required?'
-   0.3733  it-security-policy #0
-   0.2556  atlas-product-faq #2
-   ...
+  <score>  it-security-policy #<chunk>
+  ...
 
 [3/4] RAG chat: 'What do I do if my laptop is stolen?'
-  answer   : ... Lost or stolen devices must be reported within four hours ...
-  citations: ['atlas-product-faq', 'onboarding-guide', 'it-security-policy']
+  answer   : ... reported within four hours ...
+  citations: [...]
 
 [4/4] Agent: 'What is (14 + 90) * 2?'
   steps  : ['calculator']
@@ -160,7 +161,7 @@ All settings load from the environment / `.env`
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `JWT_SECRET` | dev-only placeholder | HS256 signing key; a strong value is enforced at startup in azure mode |
+| `JWT_SECRET` | random per process | HS256 signing key. Leave blank locally — a published constant would let anyone mint an admin token against any instance. A strong value is enforced at startup in azure mode |
 | `ALLOW_ANONYMOUS_DEV_ADMIN` | `false` | Local quickstart only: tokenless requests act as dev admin; refused in azure mode |
 | `CHUNK_SIZE` / `CHUNK_OVERLAP` | `800` / `150` | Chunker geometry (characters) |
 | `RETRIEVAL_TOP_K` | `5` | Chunks fed to the LLM per question |
@@ -189,7 +190,7 @@ All settings load from the environment / `.env`
 ## Testing
 
 ```bash
-pytest -q          # 28 tests, all offline
+pytest -q          # 37 tests, 80% line coverage, all offline
 ruff check .       # lint
 ```
 
@@ -198,13 +199,77 @@ end-to-end local-mode RAG round trip (ingest → search → grounded answer →
 citations), agent tool selection, calculator injection resistance, and API
 smoke tests for every role boundary.
 
+## Retrieval evaluation
+
+Claiming a RAG system "works" without measuring retrieval is claiming nothing.
+`evaluation/` holds a golden set of **30 questions over a 10-document,
+51-chunk corpus**, each question answerable from exactly one document. Every
+`answer_contains` string was checked to appear in its expected document and in
+no other, so a hit cannot be scored by accident.
+
+```bash
+python -m evaluation.run_eval
+```
+
+Measured in local mode — no cloud account, no key, no network:
+
+| Metric | Naive overlap | **BM25** |
+|---|---:|---:|
+| hit@1 | 0.367 | **0.533** |
+| hit@3 | 0.500 | **0.700** |
+| hit@5 | 0.700 | **0.767** |
+| MRR | 0.474 | **0.621** |
+| nDCG@5 | 0.535 | **0.657** |
+| citation accuracy | 0.367 | **0.533** |
+
+The **BM25 column is what the current code produces** — run the command above
+and you should reproduce it exactly. The **naive-overlap column is historical**:
+the harness and BM25 landed in the same commit, so the old scorer survives only
+in git. To regenerate it:
+
+```bash
+git show 9fe7059:app/services/vector_store.py > /tmp/old_store.py  # pre-BM25
+```
+
+and run the harness against that file. Quoting a before/after where only the
+"after" is reproducible would be the easy version of this table; the commit
+reference is what makes the "before" checkable.
+
+Full per-question results are committed to
+[`evaluation/results.json`](evaluation/results.json), which also records
+retrieve/answer latency. Latency is not quoted here on purpose — it swung
+roughly 3x across runs on one machine, so it measures the laptop, not the
+retriever. CI re-runs the evaluation and fails the build if the quality scores
+drop below floors.
+
+**The measurement paid for itself immediately.** The first run scored 0.70
+hit@5 and 0.474 MRR. The lexical half of the hybrid was a raw query-token
+overlap ratio: it ignored how rare a term is, how often it occurs in a chunk,
+and how long the chunk is, so a long chunk mentioning a common word outranked
+a short chunk that was actually about the query. Replacing it with Okapi BM25
+(no new dependency, ~30 lines) lifted MRR by 31% (0.474 -> 0.621) and hit@3 by 40% (0.500 -> 0.700).
+
+**Read these numbers for what they are.** They describe the *offline* stack:
+signed-feature-hashing embeddings with no semantic capability, and an
+extractive mock LLM. That is deliberately the weakest configuration the
+project supports, and it is what CI can run with zero credentials. Azure mode
+swaps in `text-embedding-3-large` and GPT-4o and would score differently — but
+that has not been measured, so no number for it is claimed here. The low
+`answer_groundedness` (0.167) is the mock LLM's extractive stitching, not a
+retrieval failure: the right chunks are retrieved far more often than the
+answer text reproduces the exact expected phrase.
+
 ## CI/CD
 
-- **[ci.yml](.github/workflows/ci.yml)** — ruff + pytest on every push/PR;
-  runs entirely in local mode, zero secrets.
+- **[ci.yml](.github/workflows/ci.yml)** — ruff + pytest on Python
+  3.11/3.12/3.13 with coverage, a retrieval-evaluation gate, Terraform
+  validation, and a container build with a health check. Runs entirely in
+  local mode, zero secrets.
 - **[deploy.yml](.github/workflows/deploy.yml)** — on version tags: build the
   container, push to Azure Container Registry, deploy to App Service, smoke
-  check `/healthz`.
+  check `/healthz`. *Reference pipeline: it describes the intended release
+  path but has not been provisioned against a live subscription, so no
+  deployment run exists in this repo's history.*
 - **[infra/](infra/)** — Terraform for the full footprint: AI Search, OpenAI
   deployments, blob storage, Key Vault (secrets via references), Log
   Analytics + App Insights, and the App Service with managed-identity ACR

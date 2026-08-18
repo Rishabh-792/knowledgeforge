@@ -41,7 +41,7 @@ def _pipeline() -> RagPipeline:
                     vector=v,
                     acl_groups=["public"],
                 )
-                for c, v in zip(chunks, vectors)
+                for c, v in zip(chunks, vectors, strict=True)
             ]
         )
     return RagPipeline(embedder, store, MockLLM(), top_k=3)

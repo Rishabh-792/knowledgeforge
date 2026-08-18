@@ -9,12 +9,12 @@
 
 import hashlib
 import math
-import re
-from typing import Protocol, Sequence
+from collections.abc import Sequence
+from typing import Protocol
 
 from app.core.exceptions import UpstreamServiceError
 
-_TOKEN_RE = re.compile(r"[a-z0-9]+")
+from .text import tokenize
 
 
 class Embedder(Protocol):
@@ -34,7 +34,7 @@ class LocalHashEmbedder:
 
     def _embed_one(self, text: str) -> list[float]:
         vec = [0.0] * self.dimensions
-        for token in _TOKEN_RE.findall(text.lower()):
+        for token in tokenize(text):
             digest = hashlib.md5(token.encode()).digest()  # stable across runs
             bucket = int.from_bytes(digest[:4], "big") % self.dimensions
             sign = 1.0 if digest[4] % 2 == 0 else -1.0

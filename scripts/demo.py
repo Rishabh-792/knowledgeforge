@@ -12,16 +12,16 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from app.api.deps import (  # noqa: E402
+from app.api.deps import (
     get_agent,
     get_embedder,
     get_pii_redactor,
     get_rag,
     get_vector_store,
 )
-from app.core.config import get_settings  # noqa: E402
-from app.services.chunking import chunk_text  # noqa: E402
-from app.services.vector_store import ChunkRecord  # noqa: E402
+from app.core.config import get_settings
+from app.services.chunking import chunk_text
+from app.services.vector_store import ChunkRecord
 
 
 def seed_sample_docs() -> None:
@@ -43,7 +43,7 @@ def seed_sample_docs() -> None:
                     vector=v,
                     acl_groups=["public"],
                 )
-                for c, v in zip(chunks, vectors)
+                for c, v in zip(chunks, vectors, strict=True)
             ]
         )
         print(

@@ -5,13 +5,59 @@ on:
     branches: [main]
   pull_request:
 
+# A newer push to the same ref supersedes an in-flight run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        # The README advertises 3.11+; test every version it claims.
+        python-version: ["3.11", "3.12", "3.13"]
 
-      - uses: actions/setup-python@v5
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: ruff check app ingestion scripts tests evaluation
+
+      - name: Test (local mode, no cloud credentials)
+        run: pytest -q --cov=app --cov=ingestion --cov-report=term-missing --cov-report=xml
+
+      - name: Upload coverage artifact
+        if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          retention-days: 14
+
+  # Retrieval quality over a golden question set. Runs in local mode, so the
+  # numbers describe the deterministic offline embedder and extractive LLM -
+  # no cloud account, no key, no network.
+  evaluation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
@@ -19,8 +65,119 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
 
-      - name: Lint
-        run: ruff check app ingestion scripts tests
+      - name: Run retrieval evaluation
+        run: python -m evaluation.run_eval
 
-      - name: Test (local mode, no cloud credentials)
-        run: pytest -q
+      - name: Enforce retrieval quality floors
+        run: |
+          python - <<'PY'
+          import json, sys
+
+          summary = json.load(open("evaluation/results.json"))["summary"]
+          print(json.dumps(summary, indent=2))
+
+          # Floors sit below the committed results so ordinary variation does
+          # not fail the build, but a real regression in chunking, embedding,
+          # or ranking does. hit@1 and citation_accuracy are floored too: they
+          # are the weakest numbers, so a regression that halved them while
+          # leaving hit@5 intact would otherwise ship green.
+          floors = {
+              "hit@1": 0.45,
+              "hit@3": 0.65,
+              "hit@5": 0.70,
+              "mrr": 0.55,
+              "ndcg@5": 0.58,
+              "citation_accuracy": 0.45,
+          }
+          failures = [
+              f"{k}={summary[k]:.4f} < floor {v}"
+              for k, v in floors.items()
+              if summary[k] < v
+          ]
+          if failures:
+              sys.exit("Retrieval quality gate failed:\n  " + "\n  ".join(failures))
+          print("Retrieval quality gate passed.")
+          PY
+
+      # The committed artifact is what the README quotes, so it has to still
+      # describe the code. Without this the file is regenerated and uploaded
+      # every run but never compared to the copy in git.
+      - name: Verify committed results still reproduce
+        run: |
+          python - <<'PY'
+          import json, subprocess, sys
+
+          fresh = json.load(open("evaluation/results.json"))["summary"]
+          committed = json.loads(
+              subprocess.check_output(["git", "show", "HEAD:evaluation/results.json"])
+          )["summary"]
+
+          keys = ("hit@1", "hit@3", "hit@5", "mrr", "ndcg@5", "citation_accuracy")
+          drift = {
+              k: (committed[k], fresh[k]) for k in keys if abs(committed[k] - fresh[k]) > 0.02
+          }
+          if drift:
+              sys.exit(
+                  "Committed retrieval metrics no longer reproduce:\n"
+                  + "\n".join(f"  {k}: committed {c:.4f} vs fresh {f:.4f}" for k, (c, f) in drift.items())
+                  + "\nRe-run the evaluation and commit evaluation/results.json."
+              )
+          print("Committed retrieval metrics reproduce within tolerance.")
+          PY
+
+      - name: Upload evaluation results
+        uses: actions/upload-artifact@v4
+        with:
+          name: evaluation-results
+          path: evaluation/results.json
+          retention-days: 14
+
+  terraform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+
+      - name: Terraform format check
+        run: terraform fmt -check -recursive infra
+
+      - name: Terraform validate
+        working-directory: infra
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      # The default docker driver cannot export a GHA cache; the container
+      # driver can, and still supports load: true for the smoke test below.
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: knowledgeforge:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test the container
+        run: |
+          docker run -d --name kf -p 8000:8000 knowledgeforge:ci
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8000/healthz; then
+              echo "healthz OK"; exit 0
+            fi
+            sleep 2
+          done
+          echo "container failed to become healthy"; docker logs kf; exit 1

@@ -1,0 +1,1000 @@
+{
+  "generated_at_utc": "2026-08-18T05:15:03+00:00",
+  "mode": "local",
+  "config": {
+    "top_k": 5,
+    "chunk_size": 800,
+    "chunk_overlap": 150,
+    "embedding_dimensions": 256
+  },
+  "corpus": {
+    "atlas-product-faq": 4,
+    "atlas-release-notes": 5,
+    "benefits-and-leave-guide": 6,
+    "data-retention-standard": 5,
+    "engineering-oncall-handbook": 6,
+    "expense-and-travel-policy": 5,
+    "incident-response-runbook": 5,
+    "it-security-policy": 5,
+    "onboarding-guide": 4,
+    "procurement-and-vendor-policy": 6
+  },
+  "summary": {
+    "questions": 30,
+    "documents": 10,
+    "chunks": 51,
+    "hit@1": 0.5333,
+    "hit@3": 0.7,
+    "hit@5": 0.7667,
+    "mrr": 0.6206,
+    "ndcg@5": 0.657,
+    "citation_accuracy": 0.5333,
+    "answer_groundedness": 0.1667,
+    "retrieve_ms_p50": 17.243,
+    "retrieve_ms_p95": 23.673,
+    "answer_ms_p50": 19.878,
+    "answer_ms_p95": 25.571
+  },
+  "cases": [
+    {
+      "id": "q01",
+      "question": "If we sign up for the top Atlas plan, what availability is promised and do we get anything back when it is missed?",
+      "expected_doc": "atlas-product-faq",
+      "retrieved": [
+        "atlas-product-faq",
+        "atlas-product-faq",
+        "engineering-oncall-handbook",
+        "atlas-release-notes",
+        "benefits-and-leave-guide"
+      ],
+      "retrieved_docs": [
+        "atlas-product-faq",
+        "engineering-oncall-handbook",
+        "atlas-release-notes",
+        "benefits-and-leave-guide"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "atlas-product-faq",
+      "citation_correct": true,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 18.611,
+        "answer": 24.046
+      }
+    },
+    {
+      "id": "q02",
+      "question": "How long does Atlas hold on to vehicle telemetry before it gets aggregated and anonymized?",
+      "expected_doc": "atlas-product-faq",
+      "retrieved": [
+        "atlas-product-faq",
+        "atlas-release-notes",
+        "atlas-product-faq",
+        "data-retention-standard",
+        "atlas-release-notes"
+      ],
+      "retrieved_docs": [
+        "atlas-product-faq",
+        "atlas-release-notes",
+        "data-retention-standard"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "atlas-product-faq",
+      "citation_correct": true,
+      "answer_contains_matched": [
+        "thirteen months"
+      ],
+      "answer_grounded": true,
+      "latency_ms": {
+        "retrieve": 18.051,
+        "answer": 20.599
+      }
+    },
+    {
+      "id": "q03",
+      "question": "What is the biggest fleet the entry-level Atlas plan can handle?",
+      "expected_doc": "atlas-product-faq",
+      "retrieved": [
+        "atlas-product-faq",
+        "atlas-product-faq",
+        "atlas-product-faq",
+        "atlas-release-notes",
+        "atlas-product-faq"
+      ],
+      "retrieved_docs": [
+        "atlas-product-faq",
+        "atlas-release-notes"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "atlas-product-faq",
+      "citation_correct": true,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 13.253,
+        "answer": 17.51
+      }
+    },
+    {
+      "id": "q04",
+      "question": "How long can I stay connected on the VPN before I have to authenticate again?",
+      "expected_doc": "it-security-policy",
+      "retrieved": [
+        "it-security-policy",
+        "onboarding-guide",
+        "procurement-and-vendor-policy",
+        "engineering-oncall-handbook",
+        "benefits-and-leave-guide"
+      ],
+      "retrieved_docs": [
+        "it-security-policy",
+        "onboarding-guide",
+        "procurement-and-vendor-policy",
+        "engineering-oncall-handbook",
+        "benefits-and-leave-guide"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "it-security-policy",
+      "citation_correct": true,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 10.308,
+        "answer": 11.255
+      }
+    },
+    {
+      "id": "q05",
+      "question": "Someone took my work laptop off a train. How fast do I have to tell the company?",
+      "expected_doc": "it-security-policy",
+      "retrieved": [
+        "onboarding-guide",
+        "expense-and-travel-policy",
+        "procurement-and-vendor-policy",
+        "benefits-and-leave-guide",
+        "it-security-policy"
+      ],
+      "retrieved_docs": [
+        "onboarding-guide",
+        "expense-and-travel-policy",
+        "procurement-and-vendor-policy",
+        "benefits-and-leave-guide",
+        "it-security-policy"
+      ],
+      "hit@1": false,
+      "hit@3": false,
+      "hit@5": true,
+      "first_hit_rank": 5,
+      "reciprocal_rank": 0.2,
+      "ndcg@5": 0.386853,
+      "top_citation": "onboarding-guide",
+      "citation_correct": false,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 12.17,
+        "answer": 16.636
+      }
+    },
+    {
+      "id": "q06",
+      "question": "What happens to a permission if my manager never signs off on it during the periodic entitlement check?",
+      "expected_doc": "it-security-policy",
+      "retrieved": [
+        "incident-response-runbook",
+        "procurement-and-vendor-policy",
+        "it-security-policy",
+        "onboarding-guide",
+        "benefits-and-leave-guide"
+      ],
+      "retrieved_docs": [
+        "incident-response-runbook",
+        "procurement-and-vendor-policy",
+        "it-security-policy",
+        "onboarding-guide",
+        "benefits-and-leave-guide"
+      ],
+      "hit@1": false,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 3,
+      "reciprocal_rank": 0.333333,
+      "ndcg@5": 0.5,
+      "top_citation": "incident-response-runbook",
+      "citation_correct": false,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 20.189,
+        "answer": 20.666
+      }
+    },
+    {
+      "id": "q07",
+      "question": "By what date do I need my bank details in the HR portal to get paid in my first month?",
+      "expected_doc": "onboarding-guide",
+      "retrieved": [
+        "onboarding-guide",
+        "onboarding-guide",
+        "benefits-and-leave-guide",
+        "expense-and-travel-policy",
+        "benefits-and-leave-guide"
+      ],
+      "retrieved_docs": [
+        "onboarding-guide",
+        "benefits-and-leave-guide",
+        "expense-and-travel-policy"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "onboarding-guide",
+      "citation_correct": true,
+      "answer_contains_matched": [
+        "fifteenth"
+      ],
+      "answer_grounded": true,
+      "latency_ms": {
+        "retrieve": 14.271,
+        "answer": 24.998
+      }
+    },
+    {
+      "id": "q08",
+      "question": "Roughly how long should I set aside to get my dev machine set up with the platform team's script?",
+      "expected_doc": "onboarding-guide",
+      "retrieved": [
+        "onboarding-guide",
+        "onboarding-guide",
+        "atlas-release-notes",
+        "atlas-product-faq",
+        "atlas-release-notes"
+      ],
+      "retrieved_docs": [
+        "onboarding-guide",
+        "atlas-release-notes",
+        "atlas-product-faq"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "onboarding-guide",
+      "citation_correct": true,
+      "answer_contains_matched": [
+        "forty minutes"
+      ],
+      "answer_grounded": true,
+      "latency_ms": {
+        "retrieve": 17.917,
+        "answer": 20.565
+      }
+    },
+    {
+      "id": "q09",
+      "question": "How many days of annual leave does a Larkspur employee earn in a year?",
+      "expected_doc": "onboarding-guide",
+      "retrieved": [
+        "benefits-and-leave-guide",
+        "benefits-and-leave-guide",
+        "benefits-and-leave-guide",
+        "benefits-and-leave-guide",
+        "data-retention-standard"
+      ],
+      "retrieved_docs": [
+        "benefits-and-leave-guide",
+        "data-retention-standard"
+      ],
+      "hit@1": false,
+      "hit@3": false,
+      "hit@5": false,
+      "first_hit_rank": null,
+      "reciprocal_rank": 0.0,
+      "ndcg@5": 0.0,
+      "top_citation": "benefits-and-leave-guide",
+      "citation_correct": false,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 20.308,
+        "answer": 23.372
+      }
+    },
+    {
+      "id": "q10",
+      "question": "I am travelling overseas next week. What is my daily food allowance?",
+      "expected_doc": "expense-and-travel-policy",
+      "retrieved": [
+        "benefits-and-leave-guide",
+        "atlas-product-faq",
+        "atlas-product-faq",
+        "engineering-oncall-handbook",
+        "engineering-oncall-handbook"
+      ],
+      "retrieved_docs": [
+        "benefits-and-leave-guide",
+        "atlas-product-faq",
+        "engineering-oncall-handbook"
+      ],
+      "hit@1": false,
+      "hit@3": false,
+      "hit@5": false,
+      "first_hit_rank": null,
+      "reciprocal_rank": 0.0,
+      "ndcg@5": 0.0,
+      "top_citation": "benefits-and-leave-guide",
+      "citation_correct": false,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 22.313,
+        "answer": 22.414
+      }
+    },
+    {
+      "id": "q11",
+      "question": "How much time do I have after getting back from a trip to file my claim?",
+      "expected_doc": "expense-and-travel-policy",
+      "retrieved": [
+        "benefits-and-leave-guide",
+        "expense-and-travel-policy",
+        "onboarding-guide",
+        "expense-and-travel-policy",
+        "benefits-and-leave-guide"
+      ],
+      "retrieved_docs": [
+        "benefits-and-leave-guide",
+        "expense-and-travel-policy",
+        "onboarding-guide"
+      ],
+      "hit@1": false,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 2,
+      "reciprocal_rank": 0.5,
+      "ndcg@5": 0.63093,
+      "top_citation": "benefits-and-leave-guide",
+      "citation_correct": false,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 18.52,
+        "answer": 18.379
+      }
+    },
+    {
+      "id": "q12",
+      "question": "Is there ever a situation where I can fly at the front of the plane on company money?",
+      "expected_doc": "expense-and-travel-policy",
+      "retrieved": [
+        "benefits-and-leave-guide",
+        "incident-response-runbook",
+        "benefits-and-leave-guide",
+        "incident-response-runbook",
+        "data-retention-standard"
+      ],
+      "retrieved_docs": [
+        "benefits-and-leave-guide",
+        "incident-response-runbook",
+        "data-retention-standard"
+      ],
+      "hit@1": false,
+      "hit@3": false,
+      "hit@5": false,
+      "first_hit_rank": null,
+      "reciprocal_rank": 0.0,
+      "ndcg@5": 0.0,
+      "top_citation": "benefits-and-leave-guide",
+      "citation_correct": false,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 19.245,
+        "answer": 23.624
+      }
+    },
+    {
+      "id": "q13",
+      "question": "During a total outage, how frequently do we have to tell people what is going on?",
+      "expected_doc": "incident-response-runbook",
+      "retrieved": [
+        "incident-response-runbook",
+        "atlas-release-notes",
+        "engineering-oncall-handbook",
+        "engineering-oncall-handbook",
+        "procurement-and-vendor-policy"
+      ],
+      "retrieved_docs": [
+        "incident-response-runbook",
+        "atlas-release-notes",
+        "engineering-oncall-handbook",
+        "procurement-and-vendor-policy"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "incident-response-runbook",
+      "citation_correct": true,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 22.953,
+        "answer": 23.401
+      }
+    },
+    {
+      "id": "q14",
+      "question": "Nobody picked up the page. How long before it jumps to the next person in line?",
+      "expected_doc": "incident-response-runbook",
+      "retrieved": [
+        "incident-response-runbook",
+        "atlas-release-notes",
+        "incident-response-runbook",
+        "onboarding-guide",
+        "procurement-and-vendor-policy"
+      ],
+      "retrieved_docs": [
+        "incident-response-runbook",
+        "atlas-release-notes",
+        "onboarding-guide",
+        "procurement-and-vendor-policy"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "incident-response-runbook",
+      "citation_correct": true,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 17.274,
+        "answer": 23.133
+      }
+    },
+    {
+      "id": "q15",
+      "question": "Once the worst class of incident is resolved, what is the deadline for the written retrospective?",
+      "expected_doc": "incident-response-runbook",
+      "retrieved": [
+        "incident-response-runbook",
+        "it-security-policy",
+        "incident-response-runbook",
+        "data-retention-standard",
+        "data-retention-standard"
+      ],
+      "retrieved_docs": [
+        "incident-response-runbook",
+        "it-security-policy",
+        "data-retention-standard"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "incident-response-runbook",
+      "citation_correct": true,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 19.046,
+        "answer": 21.107
+      }
+    },
+    {
+      "id": "q16",
+      "question": "Who has the authority to freeze deletions when litigation is expected?",
+      "expected_doc": "data-retention-standard",
+      "retrieved": [
+        "procurement-and-vendor-policy",
+        "engineering-oncall-handbook",
+        "engineering-oncall-handbook",
+        "incident-response-runbook",
+        "engineering-oncall-handbook"
+      ],
+      "retrieved_docs": [
+        "procurement-and-vendor-policy",
+        "engineering-oncall-handbook",
+        "incident-response-runbook"
+      ],
+      "hit@1": false,
+      "hit@3": false,
+      "hit@5": false,
+      "first_hit_rank": null,
+      "reciprocal_rank": 0.0,
+      "ndcg@5": 0.0,
+      "top_citation": "procurement-and-vendor-policy",
+      "citation_correct": false,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 24.552,
+        "answer": 22.546
+      }
+    },
+    {
+      "id": "q17",
+      "question": "How far back can we restore from the nightly incremental backups?",
+      "expected_doc": "data-retention-standard",
+      "retrieved": [
+        "data-retention-standard",
+        "data-retention-standard",
+        "benefits-and-leave-guide",
+        "benefits-and-leave-guide",
+        "incident-response-runbook"
+      ],
+      "retrieved_docs": [
+        "data-retention-standard",
+        "benefits-and-leave-guide",
+        "incident-response-runbook"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "data-retention-standard",
+      "citation_correct": true,
+      "answer_contains_matched": [
+        "thirty-five days"
+      ],
+      "answer_grounded": true,
+      "latency_ms": {
+        "retrieve": 21.879,
+        "answer": 12.731
+      }
+    },
+    {
+      "id": "q18",
+      "question": "How do we actually get rid of data that lives in an encrypted store?",
+      "expected_doc": "data-retention-standard",
+      "retrieved": [
+        "atlas-product-faq",
+        "it-security-policy",
+        "data-retention-standard",
+        "it-security-policy",
+        "procurement-and-vendor-policy"
+      ],
+      "retrieved_docs": [
+        "atlas-product-faq",
+        "it-security-policy",
+        "data-retention-standard",
+        "procurement-and-vendor-policy"
+      ],
+      "hit@1": false,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 3,
+      "reciprocal_rank": 0.333333,
+      "ndcg@5": 0.5,
+      "top_citation": "atlas-product-faq",
+      "citation_correct": false,
+      "answer_contains_matched": [
+        "crypto-shredding"
+      ],
+      "answer_grounded": true,
+      "latency_ms": {
+        "retrieve": 9.841,
+        "answer": 15.819
+      }
+    },
+    {
+      "id": "q19",
+      "question": "What did the multi-depot balancing work do to how fast plans are computed?",
+      "expected_doc": "atlas-release-notes",
+      "retrieved": [
+        "atlas-release-notes",
+        "atlas-product-faq",
+        "atlas-release-notes",
+        "engineering-oncall-handbook",
+        "it-security-policy"
+      ],
+      "retrieved_docs": [
+        "atlas-release-notes",
+        "atlas-product-faq",
+        "engineering-oncall-handbook",
+        "it-security-policy"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "atlas-release-notes",
+      "citation_correct": true,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 12.065,
+        "answer": 13.07
+      }
+    },
+    {
+      "id": "q20",
+      "question": "If our endpoint is down, how many times will Atlas try to redeliver an event before parking it?",
+      "expected_doc": "atlas-release-notes",
+      "retrieved": [
+        "atlas-release-notes",
+        "atlas-release-notes",
+        "atlas-product-faq",
+        "onboarding-guide",
+        "engineering-oncall-handbook"
+      ],
+      "retrieved_docs": [
+        "atlas-release-notes",
+        "atlas-product-faq",
+        "onboarding-guide",
+        "engineering-oncall-handbook"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "atlas-release-notes",
+      "citation_correct": true,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 11.212,
+        "answer": 14.233
+      }
+    },
+    {
+      "id": "q21",
+      "question": "A driver is going into a dead zone all afternoon. How much routing data does the phone keep locally?",
+      "expected_doc": "atlas-release-notes",
+      "retrieved": [
+        "atlas-product-faq",
+        "atlas-release-notes",
+        "atlas-product-faq",
+        "atlas-release-notes",
+        "procurement-and-vendor-policy"
+      ],
+      "retrieved_docs": [
+        "atlas-product-faq",
+        "atlas-release-notes",
+        "procurement-and-vendor-policy"
+      ],
+      "hit@1": false,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 2,
+      "reciprocal_rank": 0.5,
+      "ndcg@5": 0.63093,
+      "top_citation": "atlas-product-faq",
+      "citation_correct": false,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 10.09,
+        "answer": 16.822
+      }
+    },
+    {
+      "id": "q22",
+      "question": "How much time do I need to put in at the company before I can take an extended paid break?",
+      "expected_doc": "benefits-and-leave-guide",
+      "retrieved": [
+        "benefits-and-leave-guide",
+        "onboarding-guide",
+        "benefits-and-leave-guide",
+        "atlas-product-faq",
+        "expense-and-travel-policy"
+      ],
+      "retrieved_docs": [
+        "benefits-and-leave-guide",
+        "onboarding-guide",
+        "atlas-product-faq",
+        "expense-and-travel-policy"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "benefits-and-leave-guide",
+      "citation_correct": true,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 17.212,
+        "answer": 26.271
+      }
+    },
+    {
+      "id": "q23",
+      "question": "My partner and I are expecting, and I will be the main carer. How much paid time off do I get?",
+      "expected_doc": "benefits-and-leave-guide",
+      "retrieved": [
+        "benefits-and-leave-guide",
+        "onboarding-guide",
+        "expense-and-travel-policy",
+        "onboarding-guide",
+        "benefits-and-leave-guide"
+      ],
+      "retrieved_docs": [
+        "benefits-and-leave-guide",
+        "onboarding-guide",
+        "expense-and-travel-policy"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "benefits-and-leave-guide",
+      "citation_correct": true,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 20.524,
+        "answer": 22.682
+      }
+    },
+    {
+      "id": "q24",
+      "question": "If I pick the high-deductible medical option, what does Larkspur put into my savings account each year for single cover?",
+      "expected_doc": "benefits-and-leave-guide",
+      "retrieved": [
+        "benefits-and-leave-guide",
+        "atlas-release-notes",
+        "procurement-and-vendor-policy",
+        "benefits-and-leave-guide",
+        "engineering-oncall-handbook"
+      ],
+      "retrieved_docs": [
+        "benefits-and-leave-guide",
+        "atlas-release-notes",
+        "procurement-and-vendor-policy",
+        "engineering-oncall-handbook"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "benefits-and-leave-guide",
+      "citation_correct": true,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 20.085,
+        "answer": 19.61
+      }
+    },
+    {
+      "id": "q25",
+      "question": "We want to buy a tool that will cost about fifty thousand a year. How many bids do we need?",
+      "expected_doc": "procurement-and-vendor-policy",
+      "retrieved": [
+        "benefits-and-leave-guide",
+        "benefits-and-leave-guide",
+        "atlas-release-notes",
+        "benefits-and-leave-guide",
+        "expense-and-travel-policy"
+      ],
+      "retrieved_docs": [
+        "benefits-and-leave-guide",
+        "atlas-release-notes",
+        "expense-and-travel-policy"
+      ],
+      "hit@1": false,
+      "hit@3": false,
+      "hit@5": false,
+      "first_hit_rank": null,
+      "reciprocal_rank": 0.0,
+      "ndcg@5": 0.0,
+      "top_citation": "benefits-and-leave-guide",
+      "citation_correct": false,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 15.918,
+        "answer": 14.2
+      }
+    },
+    {
+      "id": "q26",
+      "question": "A supplier says filling in our long security form is too much work. What evidence can they hand over instead?",
+      "expected_doc": "procurement-and-vendor-policy",
+      "retrieved": [
+        "engineering-oncall-handbook",
+        "it-security-policy",
+        "it-security-policy",
+        "onboarding-guide",
+        "atlas-release-notes"
+      ],
+      "retrieved_docs": [
+        "engineering-oncall-handbook",
+        "it-security-policy",
+        "onboarding-guide",
+        "atlas-release-notes"
+      ],
+      "hit@1": false,
+      "hit@3": false,
+      "hit@5": false,
+      "first_hit_rank": null,
+      "reciprocal_rank": 0.0,
+      "ndcg@5": 0.0,
+      "top_citation": "engineering-oncall-handbook",
+      "citation_correct": false,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 12.211,
+        "answer": 18.218
+      }
+    },
+    {
+      "id": "q27",
+      "question": "How quickly do we normally pay supplier invoices?",
+      "expected_doc": "procurement-and-vendor-policy",
+      "retrieved": [
+        "benefits-and-leave-guide",
+        "benefits-and-leave-guide",
+        "data-retention-standard",
+        "benefits-and-leave-guide",
+        "onboarding-guide"
+      ],
+      "retrieved_docs": [
+        "benefits-and-leave-guide",
+        "data-retention-standard",
+        "onboarding-guide"
+      ],
+      "hit@1": false,
+      "hit@3": false,
+      "hit@5": false,
+      "first_hit_rank": null,
+      "reciprocal_rank": 0.0,
+      "ndcg@5": 0.0,
+      "top_citation": "benefits-and-leave-guide",
+      "citation_correct": false,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 11.552,
+        "answer": 12.822
+      }
+    },
+    {
+      "id": "q28",
+      "question": "What extra pay do I get for carrying the pager as the first responder for a week?",
+      "expected_doc": "engineering-oncall-handbook",
+      "retrieved": [
+        "onboarding-guide",
+        "benefits-and-leave-guide",
+        "incident-response-runbook",
+        "engineering-oncall-handbook",
+        "onboarding-guide"
+      ],
+      "retrieved_docs": [
+        "onboarding-guide",
+        "benefits-and-leave-guide",
+        "incident-response-runbook",
+        "engineering-oncall-handbook"
+      ],
+      "hit@1": false,
+      "hit@3": false,
+      "hit@5": true,
+      "first_hit_rank": 4,
+      "reciprocal_rank": 0.25,
+      "ndcg@5": 0.430677,
+      "top_citation": "onboarding-guide",
+      "citation_correct": false,
+      "answer_contains_matched": [],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 11.166,
+        "answer": 13.38
+      }
+    },
+    {
+      "id": "q29",
+      "question": "What day of the week does the pager change hands, and how often can the same person be rostered?",
+      "expected_doc": "engineering-oncall-handbook",
+      "retrieved": [
+        "onboarding-guide",
+        "engineering-oncall-handbook",
+        "incident-response-runbook",
+        "engineering-oncall-handbook",
+        "data-retention-standard"
+      ],
+      "retrieved_docs": [
+        "onboarding-guide",
+        "engineering-oncall-handbook",
+        "incident-response-runbook",
+        "data-retention-standard"
+      ],
+      "hit@1": false,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 2,
+      "reciprocal_rank": 0.5,
+      "ndcg@5": 0.63093,
+      "top_citation": "onboarding-guide",
+      "citation_correct": false,
+      "answer_contains_matched": [
+        "wednesday"
+      ],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 13.732,
+        "answer": 20.147
+      }
+    },
+    {
+      "id": "q30",
+      "question": "What happens to a monitor that keeps waking people up but never leads to a fix?",
+      "expected_doc": "engineering-oncall-handbook",
+      "retrieved": [
+        "engineering-oncall-handbook",
+        "benefits-and-leave-guide",
+        "expense-and-travel-policy",
+        "it-security-policy",
+        "it-security-policy"
+      ],
+      "retrieved_docs": [
+        "engineering-oncall-handbook",
+        "benefits-and-leave-guide",
+        "expense-and-travel-policy",
+        "it-security-policy"
+      ],
+      "hit@1": true,
+      "hit@3": true,
+      "hit@5": true,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "engineering-oncall-handbook",
+      "citation_correct": true,
+      "answer_contains_matched": [
+        "muted"
+      ],
+      "answer_grounded": false,
+      "latency_ms": {
+        "retrieve": 10.056,
+        "answer": 13.359
+      }
+    }
+  ]
+}

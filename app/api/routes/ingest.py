@@ -58,7 +58,7 @@ def _index_document(
                 vector=v,
                 acl_groups=acl_groups,
             )
-            for c, v in zip(chunks, vectors)
+            for c, v in zip(chunks, vectors, strict=True)
         ]
     )
     logger.info(
