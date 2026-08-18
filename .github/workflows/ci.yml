@@ -35,7 +35,7 @@ jobs:
         run: pip install -r requirements-dev.txt
 
       - name: Lint
-        run: ruff check app ingestion scripts tests
+        run: ruff check app ingestion scripts tests evaluation
 
       - name: Test (local mode, no cloud credentials)
         run: pytest -q --cov=app --cov=ingestion --cov-report=term-missing --cov-report=xml
@@ -46,6 +46,55 @@ jobs:
         with:
           name: coverage-xml
           path: coverage.xml
+          retention-days: 14
+
+  # Retrieval quality over a golden question set. Runs in local mode, so the
+  # numbers describe the deterministic offline embedder and extractive LLM -
+  # no cloud account, no key, no network.
+  evaluation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run retrieval evaluation
+        run: python -m evaluation.run_eval
+
+      - name: Enforce retrieval quality floors
+        run: |
+          python - <<'PY'
+          import json, sys
+
+          summary = json.load(open("evaluation/results.json"))["summary"]
+          print(json.dumps(summary, indent=2))
+
+          # Floors sit below the committed results so ordinary variation does
+          # not fail the build, but a real regression in chunking, embedding,
+          # or ranking does.
+          floors = {"hit@5": 0.80, "hit@3": 0.70, "mrr": 0.55, "ndcg@5": 0.60}
+          failures = [
+              f"{k}={summary[k]:.4f} < floor {v}"
+              for k, v in floors.items()
+              if summary[k] < v
+          ]
+          if failures:
+              sys.exit("Retrieval quality gate failed:\n  " + "\n  ".join(failures))
+          print("Retrieval quality gate passed.")
+          PY
+
+      - name: Upload evaluation results
+        uses: actions/upload-artifact@v4
+        with:
+          name: evaluation-results
+          path: evaluation/results.json
           retention-days: 14
 
   terraform:

@@ -81,15 +81,79 @@ class VectorStore(Protocol):
     def list_documents(self) -> list[dict]: ...
 
 
+# BM25 parameters. k1 controls term-frequency saturation, b the strength of
+# length normalisation; these are the standard defaults.
+_BM25_K1 = 1.5
+_BM25_B = 0.75
+
+# Hybrid blend for the local backend. The offline embedder is signed feature
+# hashing, which captures no semantics, so lexical evidence is weighted more
+# heavily here than it would be against a real embedding model. Measured on
+# the golden set in evaluation/: see evaluation/results.json.
+_VECTOR_WEIGHT = 0.35
+_KEYWORD_WEIGHT = 0.65
+
+# Terms too common to discriminate between chunks.
+_STOPWORDS = frozenset(
+    "a an and are as at be but by can do does for from has have how i if in is it "
+    "must my of on or our should that the this to was we what when where which who "
+    "why will with you your".split()
+)
+
+
 class InMemoryStore:
     """Reference implementation; also the local-mode backend."""
 
     def __init__(self):
         self._records: dict[str, ChunkRecord] = {}
+        # Corpus statistics for BM25, rebuilt on write. Writes are rare and
+        # the corpus is demo-sized, so recomputing beats incremental bookkeeping.
+        self._tokens: dict[str, list[str]] = {}
+        self._doc_freq: dict[str, int] = {}
+        self._avg_len: float = 0.0
 
     def upsert(self, records: list[ChunkRecord]) -> None:
         for rec in records:
             self._records[rec.id] = rec
+            self._tokens[rec.id] = _TOKEN_RE.findall(rec.content.lower())
+        self._reindex()
+
+    def _reindex(self) -> None:
+        self._doc_freq = {}
+        for tokens in self._tokens.values():
+            for term in set(tokens):
+                self._doc_freq[term] = self._doc_freq.get(term, 0) + 1
+        lengths = [len(t) for t in self._tokens.values()]
+        self._avg_len = (sum(lengths) / len(lengths)) if lengths else 0.0
+
+    def _bm25(self, q_terms: list[str], record_id: str) -> float:
+        """Okapi BM25 for one chunk.
+
+        Replaces a raw query-token overlap ratio, which ignored how rare a term
+        is, how often it occurs, and how long the chunk is - so a long chunk
+        mentioning a common word outranked a short chunk that was actually about
+        the query.
+        """
+        tokens = self._tokens.get(record_id)
+        if not tokens or not q_terms:
+            return 0.0
+
+        n_docs = len(self._tokens)
+        length = len(tokens)
+        score = 0.0
+        for term in q_terms:
+            freq = tokens.count(term)
+            if not freq:
+                continue
+            df = self._doc_freq.get(term, 0)
+            # Probabilistic IDF, floored so a term in nearly every chunk cannot
+            # contribute negatively.
+            idf = max(math.log(1.0 + (n_docs - df + 0.5) / (df + 0.5)), 0.0)
+            denom = freq + _BM25_K1 * (
+                1 - _BM25_B + _BM25_B * (length / self._avg_len if self._avg_len else 1.0)
+            )
+            score += idf * (freq * (_BM25_K1 + 1)) / denom
+        return score
 
     def hybrid_search(
         self,
@@ -100,20 +164,23 @@ class InMemoryStore:
         category: str | None = None,
     ) -> list[SearchResult]:
         # NOTE: linear scan; swap for an ANN index if the corpus outgrows a demo.
-        q_tokens = set(_TOKEN_RE.findall(query.lower()))
-        results = []
+        q_terms = [t for t in _TOKEN_RE.findall(query.lower()) if t not in _STOPWORDS]
+
+        candidates = []
         for rec in self._records.values():
             if category and rec.category != category:
                 continue
             if not is_visible(rec.acl_groups, allowed_groups):
                 continue
-            keyword = (
-                len(q_tokens & set(_TOKEN_RE.findall(rec.content.lower())))
-                / len(q_tokens)
-                if q_tokens
-                else 0.0
-            )
-            score = 0.65 * _cosine(vector, rec.vector) + 0.35 * keyword
+            candidates.append((rec, _cosine(vector, rec.vector), self._bm25(q_terms, rec.id)))
+
+        # BM25 is unbounded, cosine is in [-1, 1]. Scale BM25 by the best score
+        # in this candidate set so the two components blend on comparable ranges.
+        best_bm25 = max((b for _, _, b in candidates), default=0.0) or 1.0
+
+        results = []
+        for rec, cosine, bm25 in candidates:
+            score = _VECTOR_WEIGHT * cosine + _KEYWORD_WEIGHT * (bm25 / best_bm25)
             if score > 0:
                 results.append(SearchResult(rec, round(score, 4)))
         results.sort(key=lambda r: -r.score)
@@ -129,6 +196,11 @@ class InMemoryStore:
         doomed = [rid for rid, r in self._records.items() if predicate(r)]
         for rid in doomed:
             del self._records[rid]
+            self._tokens.pop(rid, None)
+        if doomed:
+            # Deleted chunks must leave the BM25 stats too, or their terms keep
+            # inflating document frequencies and depressing IDF.
+            self._reindex()
         return len(doomed)
 
     def list_documents(self) -> list[dict]:

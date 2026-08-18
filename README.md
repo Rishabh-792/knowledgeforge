@@ -189,7 +189,7 @@ All settings load from the environment / `.env`
 ## Testing
 
 ```bash
-pytest -q          # 37 tests, all offline
+pytest -q          # 37 tests, 80% line coverage, all offline
 ruff check .       # lint
 ```
 
@@ -198,10 +198,56 @@ end-to-end local-mode RAG round trip (ingest → search → grounded answer →
 citations), agent tool selection, calculator injection resistance, and API
 smoke tests for every role boundary.
 
+## Retrieval evaluation
+
+Claiming a RAG system "works" without measuring retrieval is claiming nothing.
+`evaluation/` holds a golden set of **30 questions over a 10-document,
+51-chunk corpus**, each question answerable from exactly one document. Every
+`answer_contains` string was checked to appear in its expected document and in
+no other, so a hit cannot be scored by accident.
+
+```bash
+python -m evaluation.run_eval
+```
+
+Measured in local mode — no cloud account, no key, no network:
+
+| Metric | Naive overlap | **BM25** |
+|---|---:|---:|
+| hit@1 | 0.367 | **0.533** |
+| hit@3 | 0.500 | **0.733** |
+| hit@5 | 0.700 | **0.767** |
+| MRR | 0.474 | **0.629** |
+| nDCG@5 | 0.535 | **0.664** |
+| citation accuracy | 0.367 | **0.533** |
+
+Retrieval p50/p95: **14 / 23 ms**. Full per-question results are committed to
+[`evaluation/results.json`](evaluation/results.json), and CI re-runs the
+evaluation and fails the build if the scores drop below floors.
+
+**The measurement paid for itself immediately.** The first run scored 0.70
+hit@5 and 0.474 MRR. The lexical half of the hybrid was a raw query-token
+overlap ratio: it ignored how rare a term is, how often it occurs in a chunk,
+and how long the chunk is, so a long chunk mentioning a common word outranked
+a short chunk that was actually about the query. Replacing it with Okapi BM25
+(no new dependency, ~30 lines) lifted MRR by 33% and hit@3 by 47%.
+
+**Read these numbers for what they are.** They describe the *offline* stack:
+signed-feature-hashing embeddings with no semantic capability, and an
+extractive mock LLM. That is deliberately the weakest configuration the
+project supports, and it is what CI can run with zero credentials. Azure mode
+swaps in `text-embedding-3-large` and GPT-4o and would score differently — but
+that has not been measured, so no number for it is claimed here. The low
+`answer_groundedness` (0.167) is the mock LLM's extractive stitching, not a
+retrieval failure: the right chunks are retrieved far more often than the
+answer text reproduces the exact expected phrase.
+
 ## CI/CD
 
-- **[ci.yml](.github/workflows/ci.yml)** — ruff + pytest on every push/PR;
-  runs entirely in local mode, zero secrets.
+- **[ci.yml](.github/workflows/ci.yml)** — ruff + pytest on Python
+  3.11/3.12/3.13 with coverage, a retrieval-evaluation gate, Terraform
+  validation, and a container build with a health check. Runs entirely in
+  local mode, zero secrets.
 - **[deploy.yml](.github/workflows/deploy.yml)** — on version tags: build the
   container, push to Azure Container Registry, deploy to App Service, smoke
   check `/healthz`. *Reference pipeline: it describes the intended release
