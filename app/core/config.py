@@ -5,12 +5,26 @@ if the four Azure OpenAI + Azure AI Search values are populated the app
 runs in "azure" mode, otherwise it runs fully local with mock backends.
 """
 
+import secrets
 from functools import lru_cache
 
-from pydantic import model_validator
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# Retained only so the production validator can still recognise and reject the
+# value that used to ship as the default. Nothing signs with it any more.
 _DEV_JWT_SECRET = "dev-only-secret-change-me-please-0123456789"
+
+
+def _ephemeral_jwt_secret() -> str:
+    """A fresh signing key per process when none is configured.
+
+    The previous default was a constant published in this repository, so anyone
+    who stood the demo up on a reachable host had forgeable auth: mint
+    {"role": "admin"} and RBAC returns everything. Tokens now stop working
+    across restarts, which is the correct trade for a demo.
+    """
+    return secrets.token_urlsafe(32)
 
 
 class Settings(BaseSettings):
@@ -19,7 +33,7 @@ class Settings(BaseSettings):
     # Application
     app_name: str = "KnowledgeForge"
     log_level: str = "INFO"
-    jwt_secret: str = _DEV_JWT_SECRET
+    jwt_secret: str = Field(default_factory=_ephemeral_jwt_secret)
     jwt_algorithm: str = "HS256"
     jwt_ttl_minutes: int = 60
     # Opt-in ONLY: lets tokenless requests act as a dev admin for the local
@@ -69,6 +83,19 @@ class Settings(BaseSettings):
             ]
         )
         return "azure" if azure_ready else "local"
+
+    @model_validator(mode="after")
+    def _fill_blank_jwt_secret(self) -> "Settings":
+        """Treat a blank JWT_SECRET as unset.
+
+        .env.example ships `JWT_SECRET=` so no constant key is published. A
+        copied .env therefore supplies an empty string, which *overrides* the
+        random default rather than triggering it — the app would sign every
+        token with "". Blank means "generate one".
+        """
+        if not self.jwt_secret.strip():
+            self.jwt_secret = _ephemeral_jwt_secret()
+        return self
 
     @model_validator(mode="after")
     def _enforce_production_auth(self) -> "Settings":

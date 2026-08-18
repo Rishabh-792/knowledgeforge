@@ -12,10 +12,11 @@
 Enterprise knowledge lives in a hundred places — wikis, policy PDFs, shared
 drives, product docs — and most RAG demos ignore the part that actually makes
 enterprise search hard: **not everyone is allowed to see everything**. This
-repository is a production-grade reference implementation that treats
-security as part of the retrieval pipeline, not an afterthought: ACL filtering
-happens inside the index query, PII is redacted before anything is embedded,
-and a content-safety gate fronts both ingestion and chat.
+repository is a reference implementation that treats security as part of the
+retrieval pipeline, not an afterthought: ACL filtering happens inside the index
+query, PII is redacted before anything is embedded, and a content-safety gate
+fronts both ingestion and chat. It is not production infrastructure — the local
+retrieval path is a documented linear scan and sessions are in-memory.
 
 The second problem with reference implementations is that they demand a cloud
 bill before they run. KnowledgeForge doesn't: every Azure dependency has a
@@ -83,24 +84,24 @@ pip install -r requirements-dev.txt
 python scripts/demo.py
 ```
 
-Expected output (abridged):
+It seeds all 10 sample documents (51 chunks), then runs a hybrid search, a
+grounded chat answer with citations, and an agent calculation. Shape of the
+output:
 
 ```text
 == KnowledgeForge demo (mode: local) ==
 
 [1/4] Seeding sample documents...
-  indexed atlas-product-faq.md: 4 chunks, 0 PII redactions
-  indexed it-security-policy.md: 5 chunks, 1 PII redactions
-  indexed onboarding-guide.md: 4 chunks, 3 PII redactions
+  indexed <name>.md: <n> chunks, <n> PII redactions
+  ... one line per document
 
 [2/4] Hybrid search: 'how often is password rotation required?'
-   0.3733  it-security-policy #0
-   0.2556  atlas-product-faq #2
-   ...
+  <score>  it-security-policy #<chunk>
+  ...
 
 [3/4] RAG chat: 'What do I do if my laptop is stolen?'
-  answer   : ... Lost or stolen devices must be reported within four hours ...
-  citations: ['atlas-product-faq', 'onboarding-guide', 'it-security-policy']
+  answer   : ... reported within four hours ...
+  citations: [...]
 
 [4/4] Agent: 'What is (14 + 90) * 2?'
   steps  : ['calculator']
@@ -160,7 +161,7 @@ All settings load from the environment / `.env`
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `JWT_SECRET` | dev-only placeholder | HS256 signing key; a strong value is enforced at startup in azure mode |
+| `JWT_SECRET` | random per process | HS256 signing key. Leave blank locally — a published constant would let anyone mint an admin token against any instance. A strong value is enforced at startup in azure mode |
 | `ALLOW_ANONYMOUS_DEV_ADMIN` | `false` | Local quickstart only: tokenless requests act as dev admin; refused in azure mode |
 | `CHUNK_SIZE` / `CHUNK_OVERLAP` | `800` / `150` | Chunker geometry (characters) |
 | `RETRIEVAL_TOP_K` | `5` | Chunks fed to the LLM per question |
@@ -215,22 +216,38 @@ Measured in local mode — no cloud account, no key, no network:
 | Metric | Naive overlap | **BM25** |
 |---|---:|---:|
 | hit@1 | 0.367 | **0.533** |
-| hit@3 | 0.500 | **0.733** |
+| hit@3 | 0.500 | **0.700** |
 | hit@5 | 0.700 | **0.767** |
-| MRR | 0.474 | **0.629** |
-| nDCG@5 | 0.535 | **0.664** |
+| MRR | 0.474 | **0.621** |
+| nDCG@5 | 0.535 | **0.657** |
 | citation accuracy | 0.367 | **0.533** |
 
-Retrieval p50/p95: **14 / 23 ms**. Full per-question results are committed to
-[`evaluation/results.json`](evaluation/results.json), and CI re-runs the
-evaluation and fails the build if the scores drop below floors.
+The **BM25 column is what the current code produces** — run the command above
+and you should reproduce it exactly. The **naive-overlap column is historical**:
+the harness and BM25 landed in the same commit, so the old scorer survives only
+in git. To regenerate it:
+
+```bash
+git show 9fe7059:app/services/vector_store.py > /tmp/old_store.py  # pre-BM25
+```
+
+and run the harness against that file. Quoting a before/after where only the
+"after" is reproducible would be the easy version of this table; the commit
+reference is what makes the "before" checkable.
+
+Full per-question results are committed to
+[`evaluation/results.json`](evaluation/results.json), which also records
+retrieve/answer latency. Latency is not quoted here on purpose — it swung
+roughly 3x across runs on one machine, so it measures the laptop, not the
+retriever. CI re-runs the evaluation and fails the build if the quality scores
+drop below floors.
 
 **The measurement paid for itself immediately.** The first run scored 0.70
 hit@5 and 0.474 MRR. The lexical half of the hybrid was a raw query-token
 overlap ratio: it ignored how rare a term is, how often it occurs in a chunk,
 and how long the chunk is, so a long chunk mentioning a common word outranked
 a short chunk that was actually about the query. Replacing it with Okapi BM25
-(no new dependency, ~30 lines) lifted MRR by 33% and hit@3 by 47%.
+(no new dependency, ~30 lines) lifted MRR by 31% (0.474 -> 0.621) and hit@3 by 40% (0.500 -> 0.700).
 
 **Read these numbers for what they are.** They describe the *offline* stack:
 signed-feature-hashing embeddings with no semantic capability, and an

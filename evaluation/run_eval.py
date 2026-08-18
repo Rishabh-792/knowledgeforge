@@ -32,16 +32,16 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from app.api.deps import (  # noqa: E402
+from app.api.deps import (
     get_embedder,
     get_pii_redactor,
     get_rag,
     get_vector_store,
     reset_singletons,
 )
-from app.core.config import get_settings  # noqa: E402
-from app.services.chunking import chunk_text  # noqa: E402
-from app.services.vector_store import ChunkRecord  # noqa: E402
+from app.core.config import get_settings
+from app.services.chunking import chunk_text
+from app.services.vector_store import ChunkRecord
 
 GOLDEN_PATH = REPO_ROOT / "evaluation" / "golden_questions.json"
 RESULTS_PATH = REPO_ROOT / "evaluation" / "results.json"
@@ -78,26 +78,11 @@ def seed_corpus() -> dict[str, int]:
     return counts
 
 
-def _dedupe_docs(titles: list[str]) -> list[str]:
-    """Collapses the chunk ranking to a document ranking, keeping first position."""
-    seen: set[str] = set()
-    ordered: list[str] = []
-    for title in titles:
-        if title not in seen:
-            seen.add(title)
-            ordered.append(title)
-    return ordered
-
-
 def _ndcg_at_k(doc_ranking: list[str], expected: str, k: int) -> float:
-    """Binary-relevance nDCG at the DOCUMENT level.
+    """Binary-relevance nDCG@k over DOCUMENTS, not chunks.
 
-    Relevance is defined per document, but retrieval returns chunks and several
-    chunks can share a document. Scoring the raw chunk list would count one
-    document many times and push nDCG above 1.0, so the ranking is collapsed to
-    unique documents first. Exactly one document is relevant, so the ideal DCG
-    is a single hit at rank 1, i.e. 1/log2(2) = 1.0, and nDCG reduces to the
-    discounted position of that document.
+    Scoring the chunk list would count one document many times and push nDCG
+    above 1.0. Exactly one document is relevant, so IDCG = 1.
     """
     for rank, title in enumerate(doc_ranking[:k]):
         if title == expected:
@@ -114,8 +99,14 @@ def evaluate_question(rag, question: dict, top_k: int) -> dict:
 
     titles = [r.record.title for r in results]
     hits = [t == expected for t in titles]
-    first = next((i for i, h in enumerate(hits) if h), None)
-    doc_ranking = _dedupe_docs(titles)
+    # dict preserves insertion order, so this is the chunk ranking
+    # collapsed to a document ranking, first position kept.
+    doc_ranking = list(dict.fromkeys(titles))
+    # Rank at DOCUMENT granularity, matching how relevance is defined
+    # (expected_doc) and how nDCG is scored. Using the chunk index here made
+    # MRR and nDCG measure different things: a document sitting at chunk rank 5
+    # but 2nd among distinct documents scored RR 0.20 against nDCG 0.63.
+    first = next((i for i, t in enumerate(doc_ranking) if t == expected), None)
 
     start = time.perf_counter()
     answered = rag.answer(question["question"], allowed_groups=["public"])
@@ -147,14 +138,6 @@ def evaluate_question(rag, question: dict, top_k: int) -> dict:
             "answer": round(answer_ms, 3),
         },
     }
-
-
-def _percentile(values: list[float], pct: float) -> float:
-    if not values:
-        return 0.0
-    ordered = sorted(values)
-    idx = min(round((pct / 100.0) * (len(ordered) - 1)), len(ordered) - 1)
-    return ordered[idx]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -194,9 +177,9 @@ def main(argv: list[str] | None = None) -> int:
         "citation_accuracy": round(sum(c["citation_correct"] for c in cases) / n, 4),
         "answer_groundedness": round(sum(c["answer_grounded"] for c in cases) / n, 4),
         "retrieve_ms_p50": round(statistics.median(retrieve_times), 3),
-        "retrieve_ms_p95": round(_percentile(retrieve_times, 95), 3),
+        "retrieve_ms_p95": round(statistics.quantiles(retrieve_times, n=100)[94], 3),
         "answer_ms_p50": round(statistics.median(answer_times), 3),
-        "answer_ms_p95": round(_percentile(answer_times, 95), 3),
+        "answer_ms_p95": round(statistics.quantiles(answer_times, n=100)[94], 3),
     }
 
     report = {

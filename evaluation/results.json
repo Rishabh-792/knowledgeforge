@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-08-18T04:19:21+00:00",
+  "generated_at_utc": "2026-08-18T05:15:03+00:00",
   "mode": "local",
   "config": {
     "top_k": 5,
@@ -24,16 +24,16 @@
     "documents": 10,
     "chunks": 51,
     "hit@1": 0.5333,
-    "hit@3": 0.7333,
+    "hit@3": 0.7,
     "hit@5": 0.7667,
-    "mrr": 0.6289,
-    "ndcg@5": 0.6637,
+    "mrr": 0.6206,
+    "ndcg@5": 0.657,
     "citation_accuracy": 0.5333,
     "answer_groundedness": 0.1667,
-    "retrieve_ms_p50": 13.983,
-    "retrieve_ms_p95": 22.874,
-    "answer_ms_p50": 15.089,
-    "answer_ms_p95": 23.178
+    "retrieve_ms_p50": 17.243,
+    "retrieve_ms_p95": 23.673,
+    "answer_ms_p50": 19.878,
+    "answer_ms_p95": 25.571
   },
   "cases": [
     {
@@ -44,14 +44,14 @@
         "atlas-product-faq",
         "atlas-product-faq",
         "engineering-oncall-handbook",
-        "benefits-and-leave-guide",
-        "atlas-release-notes"
+        "atlas-release-notes",
+        "benefits-and-leave-guide"
       ],
       "retrieved_docs": [
         "atlas-product-faq",
         "engineering-oncall-handbook",
-        "benefits-and-leave-guide",
-        "atlas-release-notes"
+        "atlas-release-notes",
+        "benefits-and-leave-guide"
       ],
       "hit@1": true,
       "hit@3": true,
@@ -64,8 +64,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 20.701,
-        "answer": 20.461
+        "retrieve": 18.611,
+        "answer": 24.046
       }
     },
     {
@@ -97,8 +97,8 @@
       ],
       "answer_grounded": true,
       "latency_ms": {
-        "retrieve": 13.227,
-        "answer": 16.268
+        "retrieve": 18.051,
+        "answer": 20.599
       }
     },
     {
@@ -109,8 +109,8 @@
         "atlas-product-faq",
         "atlas-product-faq",
         "atlas-product-faq",
-        "atlas-product-faq",
-        "atlas-release-notes"
+        "atlas-release-notes",
+        "atlas-product-faq"
       ],
       "retrieved_docs": [
         "atlas-product-faq",
@@ -127,8 +127,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 11.394,
-        "answer": 12.751
+        "retrieve": 13.253,
+        "answer": 17.51
       }
     },
     {
@@ -139,15 +139,15 @@
         "it-security-policy",
         "onboarding-guide",
         "procurement-and-vendor-policy",
-        "benefits-and-leave-guide",
-        "engineering-oncall-handbook"
+        "engineering-oncall-handbook",
+        "benefits-and-leave-guide"
       ],
       "retrieved_docs": [
         "it-security-policy",
         "onboarding-guide",
         "procurement-and-vendor-policy",
-        "benefits-and-leave-guide",
-        "engineering-oncall-handbook"
+        "engineering-oncall-handbook",
+        "benefits-and-leave-guide"
       ],
       "hit@1": true,
       "hit@3": true,
@@ -160,8 +160,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 11.108,
-        "answer": 12.605
+        "retrieve": 10.308,
+        "answer": 11.255
       }
     },
     {
@@ -193,8 +193,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 22.874,
-        "answer": 15.236
+        "retrieve": 12.17,
+        "answer": 16.636
       }
     },
     {
@@ -202,32 +202,32 @@
       "question": "What happens to a permission if my manager never signs off on it during the periodic entitlement check?",
       "expected_doc": "it-security-policy",
       "retrieved": [
+        "incident-response-runbook",
         "procurement-and-vendor-policy",
         "it-security-policy",
-        "incident-response-runbook",
         "onboarding-guide",
-        "expense-and-travel-policy"
+        "benefits-and-leave-guide"
       ],
       "retrieved_docs": [
+        "incident-response-runbook",
         "procurement-and-vendor-policy",
         "it-security-policy",
-        "incident-response-runbook",
         "onboarding-guide",
-        "expense-and-travel-policy"
+        "benefits-and-leave-guide"
       ],
       "hit@1": false,
       "hit@3": true,
       "hit@5": true,
-      "first_hit_rank": 2,
-      "reciprocal_rank": 0.5,
-      "ndcg@5": 0.63093,
-      "top_citation": "procurement-and-vendor-policy",
+      "first_hit_rank": 3,
+      "reciprocal_rank": 0.333333,
+      "ndcg@5": 0.5,
+      "top_citation": "incident-response-runbook",
       "citation_correct": false,
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 11.904,
-        "answer": 16.172
+        "retrieve": 20.189,
+        "answer": 20.666
       }
     },
     {
@@ -259,8 +259,8 @@
       ],
       "answer_grounded": true,
       "latency_ms": {
-        "retrieve": 14.697,
-        "answer": 14.362
+        "retrieve": 14.271,
+        "answer": 24.998
       }
     },
     {
@@ -271,13 +271,13 @@
         "onboarding-guide",
         "onboarding-guide",
         "atlas-release-notes",
-        "atlas-release-notes",
-        "data-retention-standard"
+        "atlas-product-faq",
+        "atlas-release-notes"
       ],
       "retrieved_docs": [
         "onboarding-guide",
         "atlas-release-notes",
-        "data-retention-standard"
+        "atlas-product-faq"
       ],
       "hit@1": true,
       "hit@3": true,
@@ -292,8 +292,8 @@
       ],
       "answer_grounded": true,
       "latency_ms": {
-        "retrieve": 16.653,
-        "answer": 14.942
+        "retrieve": 17.917,
+        "answer": 20.565
       }
     },
     {
@@ -305,11 +305,11 @@
         "benefits-and-leave-guide",
         "benefits-and-leave-guide",
         "benefits-and-leave-guide",
-        "procurement-and-vendor-policy"
+        "data-retention-standard"
       ],
       "retrieved_docs": [
         "benefits-and-leave-guide",
-        "procurement-and-vendor-policy"
+        "data-retention-standard"
       ],
       "hit@1": false,
       "hit@3": false,
@@ -322,8 +322,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 11.6,
-        "answer": 16.364
+        "retrieve": 20.308,
+        "answer": 23.372
       }
     },
     {
@@ -353,8 +353,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 17.594,
-        "answer": 12.469
+        "retrieve": 22.313,
+        "answer": 22.414
       }
     },
     {
@@ -363,29 +363,29 @@
       "expected_doc": "expense-and-travel-policy",
       "retrieved": [
         "benefits-and-leave-guide",
-        "onboarding-guide",
         "expense-and-travel-policy",
+        "onboarding-guide",
         "expense-and-travel-policy",
         "benefits-and-leave-guide"
       ],
       "retrieved_docs": [
         "benefits-and-leave-guide",
-        "onboarding-guide",
-        "expense-and-travel-policy"
+        "expense-and-travel-policy",
+        "onboarding-guide"
       ],
       "hit@1": false,
       "hit@3": true,
       "hit@5": true,
-      "first_hit_rank": 3,
-      "reciprocal_rank": 0.333333,
-      "ndcg@5": 0.5,
+      "first_hit_rank": 2,
+      "reciprocal_rank": 0.5,
+      "ndcg@5": 0.63093,
       "top_citation": "benefits-and-leave-guide",
       "citation_correct": false,
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 19.251,
-        "answer": 13.449
+        "retrieve": 18.52,
+        "answer": 18.379
       }
     },
     {
@@ -395,8 +395,8 @@
       "retrieved": [
         "benefits-and-leave-guide",
         "incident-response-runbook",
-        "incident-response-runbook",
         "benefits-and-leave-guide",
+        "incident-response-runbook",
         "data-retention-standard"
       ],
       "retrieved_docs": [
@@ -415,8 +415,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 12.217,
-        "answer": 14.042
+        "retrieve": 19.245,
+        "answer": 23.624
       }
     },
     {
@@ -447,8 +447,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 10.963,
-        "answer": 12.418
+        "retrieve": 22.953,
+        "answer": 23.401
       }
     },
     {
@@ -459,14 +459,14 @@
         "incident-response-runbook",
         "atlas-release-notes",
         "incident-response-runbook",
-        "procurement-and-vendor-policy",
-        "onboarding-guide"
+        "onboarding-guide",
+        "procurement-and-vendor-policy"
       ],
       "retrieved_docs": [
         "incident-response-runbook",
         "atlas-release-notes",
-        "procurement-and-vendor-policy",
-        "onboarding-guide"
+        "onboarding-guide",
+        "procurement-and-vendor-policy"
       ],
       "hit@1": true,
       "hit@3": true,
@@ -479,8 +479,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 11.588,
-        "answer": 23.178
+        "retrieve": 17.274,
+        "answer": 23.133
       }
     },
     {
@@ -488,31 +488,30 @@
       "question": "Once the worst class of incident is resolved, what is the deadline for the written retrospective?",
       "expected_doc": "incident-response-runbook",
       "retrieved": [
+        "incident-response-runbook",
         "it-security-policy",
         "incident-response-runbook",
         "data-retention-standard",
-        "expense-and-travel-policy",
         "data-retention-standard"
       ],
       "retrieved_docs": [
-        "it-security-policy",
         "incident-response-runbook",
-        "data-retention-standard",
-        "expense-and-travel-policy"
+        "it-security-policy",
+        "data-retention-standard"
       ],
-      "hit@1": false,
+      "hit@1": true,
       "hit@3": true,
       "hit@5": true,
-      "first_hit_rank": 2,
-      "reciprocal_rank": 0.5,
-      "ndcg@5": 0.63093,
-      "top_citation": "it-security-policy",
-      "citation_correct": false,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "incident-response-runbook",
+      "citation_correct": true,
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 15.95,
-        "answer": 17.617
+        "retrieve": 19.046,
+        "answer": 21.107
       }
     },
     {
@@ -542,8 +541,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 14.335,
-        "answer": 18.245
+        "retrieve": 24.552,
+        "answer": 22.546
       }
     },
     {
@@ -575,8 +574,8 @@
       ],
       "answer_grounded": true,
       "latency_ms": {
-        "retrieve": 13.632,
-        "answer": 13.221
+        "retrieve": 21.879,
+        "answer": 12.731
       }
     },
     {
@@ -609,8 +608,8 @@
       ],
       "answer_grounded": true,
       "latency_ms": {
-        "retrieve": 12.207,
-        "answer": 12.847
+        "retrieve": 9.841,
+        "answer": 15.819
       }
     },
     {
@@ -641,8 +640,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 11.007,
-        "answer": 13.264
+        "retrieve": 12.065,
+        "answer": 13.07
       }
     },
     {
@@ -652,15 +651,15 @@
       "retrieved": [
         "atlas-release-notes",
         "atlas-release-notes",
-        "onboarding-guide",
         "atlas-product-faq",
-        "procurement-and-vendor-policy"
+        "onboarding-guide",
+        "engineering-oncall-handbook"
       ],
       "retrieved_docs": [
         "atlas-release-notes",
-        "onboarding-guide",
         "atlas-product-faq",
-        "procurement-and-vendor-policy"
+        "onboarding-guide",
+        "engineering-oncall-handbook"
       ],
       "hit@1": true,
       "hit@3": true,
@@ -673,8 +672,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 12.752,
-        "answer": 13.651
+        "retrieve": 11.212,
+        "answer": 14.233
       }
     },
     {
@@ -704,8 +703,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 12.86,
-        "answer": 15.332
+        "retrieve": 10.09,
+        "answer": 16.822
       }
     },
     {
@@ -713,31 +712,31 @@
       "question": "How much time do I need to put in at the company before I can take an extended paid break?",
       "expected_doc": "benefits-and-leave-guide",
       "retrieved": [
+        "benefits-and-leave-guide",
         "onboarding-guide",
         "benefits-and-leave-guide",
-        "benefits-and-leave-guide",
-        "expense-and-travel-policy",
-        "atlas-product-faq"
+        "atlas-product-faq",
+        "expense-and-travel-policy"
       ],
       "retrieved_docs": [
-        "onboarding-guide",
         "benefits-and-leave-guide",
-        "expense-and-travel-policy",
-        "atlas-product-faq"
+        "onboarding-guide",
+        "atlas-product-faq",
+        "expense-and-travel-policy"
       ],
-      "hit@1": false,
+      "hit@1": true,
       "hit@3": true,
       "hit@5": true,
-      "first_hit_rank": 2,
-      "reciprocal_rank": 0.5,
-      "ndcg@5": 0.63093,
-      "top_citation": "onboarding-guide",
-      "citation_correct": false,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "ndcg@5": 1.0,
+      "top_citation": "benefits-and-leave-guide",
+      "citation_correct": true,
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 15.358,
-        "answer": 19.455
+        "retrieve": 17.212,
+        "answer": 26.271
       }
     },
     {
@@ -748,8 +747,8 @@
         "benefits-and-leave-guide",
         "onboarding-guide",
         "expense-and-travel-policy",
-        "benefits-and-leave-guide",
-        "onboarding-guide"
+        "onboarding-guide",
+        "benefits-and-leave-guide"
       ],
       "retrieved_docs": [
         "benefits-and-leave-guide",
@@ -767,8 +766,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 14.433,
-        "answer": 18.064
+        "retrieve": 20.524,
+        "answer": 22.682
       }
     },
     {
@@ -799,8 +798,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 21.956,
-        "answer": 18.627
+        "retrieve": 20.085,
+        "answer": 19.61
       }
     },
     {
@@ -811,8 +810,8 @@
         "benefits-and-leave-guide",
         "benefits-and-leave-guide",
         "atlas-release-notes",
-        "expense-and-travel-policy",
-        "benefits-and-leave-guide"
+        "benefits-and-leave-guide",
+        "expense-and-travel-policy"
       ],
       "retrieved_docs": [
         "benefits-and-leave-guide",
@@ -830,8 +829,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 22.681,
-        "answer": 26.003
+        "retrieve": 15.918,
+        "answer": 14.2
       }
     },
     {
@@ -839,16 +838,16 @@
       "question": "A supplier says filling in our long security form is too much work. What evidence can they hand over instead?",
       "expected_doc": "procurement-and-vendor-policy",
       "retrieved": [
+        "engineering-oncall-handbook",
+        "it-security-policy",
         "it-security-policy",
         "onboarding-guide",
-        "it-security-policy",
-        "engineering-oncall-handbook",
         "atlas-release-notes"
       ],
       "retrieved_docs": [
+        "engineering-oncall-handbook",
         "it-security-policy",
         "onboarding-guide",
-        "engineering-oncall-handbook",
         "atlas-release-notes"
       ],
       "hit@1": false,
@@ -857,13 +856,13 @@
       "first_hit_rank": null,
       "reciprocal_rank": 0.0,
       "ndcg@5": 0.0,
-      "top_citation": "it-security-policy",
+      "top_citation": "engineering-oncall-handbook",
       "citation_correct": false,
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 23.529,
-        "answer": 21.296
+        "retrieve": 12.211,
+        "answer": 18.218
       }
     },
     {
@@ -872,8 +871,8 @@
       "expected_doc": "procurement-and-vendor-policy",
       "retrieved": [
         "benefits-and-leave-guide",
-        "data-retention-standard",
         "benefits-and-leave-guide",
+        "data-retention-standard",
         "benefits-and-leave-guide",
         "onboarding-guide"
       ],
@@ -893,8 +892,8 @@
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 14.796,
-        "answer": 16.865
+        "retrieve": 11.552,
+        "answer": 12.822
       }
     },
     {
@@ -902,31 +901,31 @@
       "question": "What extra pay do I get for carrying the pager as the first responder for a week?",
       "expected_doc": "engineering-oncall-handbook",
       "retrieved": [
-        "engineering-oncall-handbook",
+        "onboarding-guide",
         "benefits-and-leave-guide",
-        "onboarding-guide",
-        "onboarding-guide",
-        "incident-response-runbook"
+        "incident-response-runbook",
+        "engineering-oncall-handbook",
+        "onboarding-guide"
       ],
       "retrieved_docs": [
-        "engineering-oncall-handbook",
-        "benefits-and-leave-guide",
         "onboarding-guide",
-        "incident-response-runbook"
+        "benefits-and-leave-guide",
+        "incident-response-runbook",
+        "engineering-oncall-handbook"
       ],
-      "hit@1": true,
-      "hit@3": true,
+      "hit@1": false,
+      "hit@3": false,
       "hit@5": true,
-      "first_hit_rank": 1,
-      "reciprocal_rank": 1.0,
-      "ndcg@5": 1.0,
-      "top_citation": "engineering-oncall-handbook",
-      "citation_correct": true,
+      "first_hit_rank": 4,
+      "reciprocal_rank": 0.25,
+      "ndcg@5": 0.430677,
+      "top_citation": "onboarding-guide",
+      "citation_correct": false,
       "answer_contains_matched": [],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 15.658,
-        "answer": 13.725
+        "retrieve": 11.166,
+        "answer": 13.38
       }
     },
     {
@@ -934,33 +933,33 @@
       "question": "What day of the week does the pager change hands, and how often can the same person be rostered?",
       "expected_doc": "engineering-oncall-handbook",
       "retrieved": [
-        "engineering-oncall-handbook",
         "onboarding-guide",
         "engineering-oncall-handbook",
         "incident-response-runbook",
+        "engineering-oncall-handbook",
         "data-retention-standard"
       ],
       "retrieved_docs": [
-        "engineering-oncall-handbook",
         "onboarding-guide",
+        "engineering-oncall-handbook",
         "incident-response-runbook",
         "data-retention-standard"
       ],
-      "hit@1": true,
+      "hit@1": false,
       "hit@3": true,
       "hit@5": true,
-      "first_hit_rank": 1,
-      "reciprocal_rank": 1.0,
-      "ndcg@5": 1.0,
-      "top_citation": "engineering-oncall-handbook",
-      "citation_correct": true,
+      "first_hit_rank": 2,
+      "reciprocal_rank": 0.5,
+      "ndcg@5": 0.63093,
+      "top_citation": "onboarding-guide",
+      "citation_correct": false,
       "answer_contains_matched": [
         "wednesday"
       ],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 11.405,
-        "answer": 13.127
+        "retrieve": 13.732,
+        "answer": 20.147
       }
     },
     {
@@ -993,8 +992,8 @@
       ],
       "answer_grounded": false,
       "latency_ms": {
-        "retrieve": 12.916,
-        "answer": 13.071
+        "retrieve": 10.056,
+        "answer": 13.359
       }
     }
   ]

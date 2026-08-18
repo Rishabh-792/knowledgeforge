@@ -20,6 +20,16 @@ terraform {
 
 provider "azurerm" {
   features {}
+  # Required from azurerm 4.0 onward. `terraform validate` does not configure
+  # the provider, so a missing value passes CI and then fails on the first real
+  # plan — set it here or via ARM_SUBSCRIPTION_ID.
+  subscription_id = var.subscription_id
+}
+
+variable "subscription_id" {
+  type        = string
+  default     = null
+  description = "Azure subscription ID. Falls back to ARM_SUBSCRIPTION_ID when null."
 }
 
 variable "env" {

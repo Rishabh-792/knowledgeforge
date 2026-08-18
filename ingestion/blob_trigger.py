@@ -29,12 +29,19 @@ from ingestion.cracking import extract_text
 
 logger = logging.getLogger(__name__)
 
-# Blobs land under <category>/<filename>; ACLs come from container metadata in
-# production. NOTE: a SharePoint connector would feed this same handler via a
-# Graph change-notification poller — same cracking + indexing path.
+# Blobs land under <category>/<filename>. ACLs are supplied by the caller from
+# container metadata; a blob that arrives without them is quarantined rather
+# than published. NOTE: a SharePoint connector would feed this same handler via
+# a Graph change-notification poller — same cracking + indexing path.
+
+# Restricted group applied when a blob carries no ACL metadata. Deliberately not
+# "public": is_visible() treats public as visible to every authenticated caller,
+# so defaulting there would silently publish confidential documents to the whole
+# tenant. An admin can re-tag a quarantined document once its ACLs are known.
+QUARANTINE_GROUP = "ingest-quarantine"
 
 
-def process_blob(blob_name: str, data: bytes) -> dict:
+def process_blob(blob_name: str, data: bytes, acl_groups: list[str] | None = None) -> dict:
     settings = get_settings()
     text = extract_text(blob_name, data)
     get_safety_gate().check(text)
@@ -45,6 +52,13 @@ def process_blob(blob_name: str, data: bytes) -> dict:
     parts = Path(blob_name)
     category = parts.parent.name or "general"
     doc_id = uuid.uuid4().hex[:12]
+
+    groups = acl_groups or [QUARANTINE_GROUP]
+    if not acl_groups:
+        logger.warning(
+            "blob carried no ACL metadata; quarantining",
+            extra={"ctx": {"blob": blob_name, "doc_id": doc_id, "acl_groups": groups}},
+        )
     get_vector_store().upsert(
         [
             ChunkRecord(
@@ -55,7 +69,7 @@ def process_blob(blob_name: str, data: bytes) -> dict:
                 chunk_index=c.index,
                 content=c.text,
                 vector=v,
-                acl_groups=["public"],
+                acl_groups=groups,
             )
             for c, v in zip(chunks, vectors, strict=True)
         ]

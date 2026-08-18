@@ -25,6 +25,7 @@ extend-immutable-calls = [
 # These entry points adjust sys.path before importing the app package.
 "scripts/*" = ["E402"]
 "tests/*" = ["E402"]
+"evaluation/*" = ["E402"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

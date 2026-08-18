@@ -5,38 +5,63 @@ name: Deploy
 #   AZURE_CREDENTIALS  - service principal JSON for azure/login
 #   ACR_LOGIN_SERVER   - e.g. kforgedevacr.azurecr.io
 #   WEBAPP_NAME        - e.g. kforge-dev-api
+#
+# STATUS: reference pipeline. No subscription is provisioned, the secrets above
+# are not configured, and this workflow has never run.
 
 on:
   push:
     tags: ["v*"]
   workflow_dispatch:
 
+# This job holds a service principal and needs nothing from GITHUB_TOKEN; both
+# Azure steps authenticate with AZURE_CREDENTIALS. Without this block the token
+# inherits the repository default, which on a write-all repo means any of the
+# three third-party actions here could push to main or rewrite workflows.
+permissions:
+  contents: read
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: production
+    # A hung deploy otherwise pins a runner for the 360-minute default while
+    # holding a decrypted service principal.
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: azure/login@v2
+      # SHA-pinned, unlike the CI workflows: those run with contents:read and
+      # no secrets in scope, so a hijacked tag buys an attacker nothing. This
+      # job hands the action a service principal, so the tag being mutable is
+      # the difference between a supply-chain compromise and a non-event.
+      # Dependabot maintains SHA pins, so this costs nothing ongoing.
+      - uses: azure/login@d19a4f1b3c068b799dff7574ac265b0144f415fe # v2.2.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # Secrets go through env rather than being interpolated into the shell
+      # source text, so their values are never part of the command line.
       - name: Build and push image
+        env:
+          ACR: ${{ secrets.ACR_LOGIN_SERVER }}
+          SHA: ${{ github.sha }}
         run: |
-          IMAGE="${{ secrets.ACR_LOGIN_SERVER }}/knowledgeforge:${{ github.sha }}"
-          az acr login --name "${{ secrets.ACR_LOGIN_SERVER }}"
+          IMAGE="$ACR/knowledgeforge:$SHA"
+          az acr login --name "$ACR"
           docker build -t "$IMAGE" .
           docker push "$IMAGE"
           echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
 
       - name: Deploy to App Service
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@de617f46172a906d0617bb0e50d81e9e3aec24c8 # v3.0.1
         with:
           app-name: ${{ secrets.WEBAPP_NAME }}
           images: ${{ env.IMAGE }}
 
       - name: Smoke check
+        env:
+          WEBAPP: ${{ secrets.WEBAPP_NAME }}
         run: |
           sleep 30
-          curl --fail "https://${{ secrets.WEBAPP_NAME }}.azurewebsites.net/healthz"
+          curl --fail "https://$WEBAPP.azurewebsites.net/healthz"

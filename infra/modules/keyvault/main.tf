@@ -24,11 +24,15 @@ resource "azurerm_key_vault" "main" {
 }
 
 resource "azurerm_key_vault_secret" "managed" {
-  # Keys are secret NAMES (not values), so they are safe as instance keys;
-  # nonsensitive() is required because Terraform forbids sensitive for_each.
-  for_each     = nonsensitive(var.secrets)
-  name         = each.key
-  value        = each.value
+  # Terraform forbids a sensitive for_each, so the marking has to come off
+  # somewhere. Un-mark only the NAMES: nonsensitive(var.secrets) would strip
+  # the marking from the values too, which is the opposite of what the previous
+  # comment here claimed. Values stay marked by indexing back into var.secrets,
+  # so Terraform still hard-errors if one is ever used in a non-sensitive
+  # position (a tag, a local, an output, a provisioner).
+  for_each     = nonsensitive(toset(keys(var.secrets)))
+  name         = each.value
+  value        = var.secrets[each.value]
   key_vault_id = azurerm_key_vault.main.id
 }
 
