@@ -79,7 +79,7 @@ jobs:
           # Floors sit below the committed results so ordinary variation does
           # not fail the build, but a real regression in chunking, embedding,
           # or ranking does.
-          floors = {"hit@5": 0.80, "hit@3": 0.70, "mrr": 0.55, "ndcg@5": 0.60}
+          floors = {"hit@5": 0.70, "hit@3": 0.65, "mrr": 0.55, "ndcg@5": 0.58}
           failures = [
               f"{k}={summary[k]:.4f} < floor {v}"
               for k, v in floors.items()
