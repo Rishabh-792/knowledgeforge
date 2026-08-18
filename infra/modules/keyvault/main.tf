@@ -13,18 +13,20 @@ variable "secrets" {
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "main" {
-  name                      = replace("${var.prefix}-kv", "_", "-")
-  resource_group_name       = var.resource_group_name
-  location                  = var.location
-  tenant_id                 = data.azurerm_client_config.current.tenant_id
-  sku_name                  = "standard"
-  enable_rbac_authorization = true
-  purge_protection_enabled  = true
-  tags                      = var.tags
+  name                       = replace("${var.prefix}-kv", "_", "-")
+  resource_group_name        = var.resource_group_name
+  location                   = var.location
+  tenant_id                  = data.azurerm_client_config.current.tenant_id
+  sku_name                   = "standard"
+  rbac_authorization_enabled = true
+  purge_protection_enabled   = true
+  tags                       = var.tags
 }
 
 resource "azurerm_key_vault_secret" "managed" {
-  for_each     = var.secrets
+  # Keys are secret NAMES (not values), so they are safe as instance keys;
+  # nonsensitive() is required because Terraform forbids sensitive for_each.
+  for_each     = nonsensitive(var.secrets)
   name         = each.key
   value        = each.value
   key_vault_id = azurerm_key_vault.main.id

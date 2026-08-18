@@ -28,8 +28,10 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
-# Terraform
+# Terraform (the provider lock file IS committed - it pins reproducible builds)
 .terraform/
 *.tfstate
 *.tfstate.*
 *.tfvars
+!*.tfvars.example
+crash.log

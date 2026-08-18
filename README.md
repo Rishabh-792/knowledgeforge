@@ -2,7 +2,7 @@
 
 **An Azure-native enterprise knowledge platform: ingestion → hybrid retrieval → RAG chat, with document-level RBAC, PII redaction, and content safety built into the pipeline — and a credential-free local mode so the whole thing runs on your laptop.**
 
-![CI](https://img.shields.io/badge/CI-passing-brightgreen)
+[![CI](https://github.com/Rishabh-792/knowledgeforge/actions/workflows/ci.yml/badge.svg)](https://github.com/Rishabh-792/knowledgeforge/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Mode](https://img.shields.io/badge/runs%20offline-yes-8A2BE2)
@@ -189,7 +189,7 @@ All settings load from the environment / `.env`
 ## Testing
 
 ```bash
-pytest -q          # 28 tests, all offline
+pytest -q          # 37 tests, all offline
 ruff check .       # lint
 ```
 
@@ -204,7 +204,9 @@ smoke tests for every role boundary.
   runs entirely in local mode, zero secrets.
 - **[deploy.yml](.github/workflows/deploy.yml)** — on version tags: build the
   container, push to Azure Container Registry, deploy to App Service, smoke
-  check `/healthz`.
+  check `/healthz`. *Reference pipeline: it describes the intended release
+  path but has not been provisioned against a live subscription, so no
+  deployment run exists in this repo's history.*
 - **[infra/](infra/)** — Terraform for the full footprint: AI Search, OpenAI
   deployments, blob storage, Key Vault (secrets via references), Log
   Analytics + App Insights, and the App Service with managed-identity ACR

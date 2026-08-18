@@ -57,7 +57,7 @@ def process_blob(blob_name: str, data: bytes) -> dict:
                 vector=v,
                 acl_groups=["public"],
             )
-            for c, v in zip(chunks, vectors)
+            for c, v in zip(chunks, vectors, strict=True)
         ]
     )
     summary = {

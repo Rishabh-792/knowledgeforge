@@ -22,7 +22,7 @@ class SafetyGate(Protocol):
 class KeywordGate:
     """Phrase blocklist; local-mode default.
 
-    ponytail: naive substring matching — the Azure gate is the real classifier,
+    NOTE: naive substring matching — the Azure gate is the real classifier,
     this exists so the pipeline stage is exercised offline.
     """
 

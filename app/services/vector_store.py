@@ -99,7 +99,7 @@ class InMemoryStore:
         allowed_groups: list[str] | None = None,
         category: str | None = None,
     ) -> list[SearchResult]:
-        # ponytail: linear scan; swap for an ANN index if the corpus outgrows a demo.
+        # NOTE: linear scan; swap for an ANN index if the corpus outgrows a demo.
         q_tokens = set(_TOKEN_RE.findall(query.lower()))
         results = []
         for rec in self._records.values():
@@ -149,7 +149,7 @@ class InMemoryStore:
 
 
 def _cosine(a: list[float], b: list[float]) -> float:
-    dot = sum(x * y for x, y in zip(a, b))
+    dot = sum(x * y for x, y in zip(a, b, strict=True))
     na = math.sqrt(sum(x * x for x in a))
     nb = math.sqrt(sum(y * y for y in b))
     return dot / (na * nb) if na and nb else 0.0
