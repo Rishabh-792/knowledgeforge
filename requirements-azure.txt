@@ -4,4 +4,4 @@ azure-search-documents>=11.4
 azure-ai-textanalytics>=5.3
 azure-ai-contentsafety>=1.0
 azure-storage-blob>=12.19
-azure-identity>=1.16
+azure-identity>=1.25.3
