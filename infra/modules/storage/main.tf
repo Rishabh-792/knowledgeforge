@@ -18,7 +18,7 @@ resource "azurerm_storage_account" "main" {
 
 resource "azurerm_storage_container" "incoming" {
   name                  = "incoming-docs"
-  storage_account_name  = azurerm_storage_account.main.name
+  storage_account_id    = azurerm_storage_account.main.id
   container_access_type = "private"
 }
 
