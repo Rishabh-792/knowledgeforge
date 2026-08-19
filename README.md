@@ -39,7 +39,7 @@ paths onto Azure OpenAI and Azure AI Search.
   endpoints; per-document ACL groups gate what search can even see.
 - **PII redaction** — regex redactor locally, Azure AI Language in cloud mode.
 - **Content safety** — keyword gate locally, Azure Content Safety in cloud mode.
-- **Ops-ready** — structured JSON logs with request IDs, `/healthz`, Docker,
+- **Operability** — structured JSON logs with request IDs, `/healthz`, Docker,
   Terraform for the full Azure footprint, CI/CD workflows.
 
 ## Architecture
