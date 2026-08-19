@@ -29,7 +29,7 @@ jobs:
     # holding a decrypted service principal.
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       # SHA-pinned, unlike the CI workflows: those run with contents:read and
       # no secrets in scope, so a hijacked tag buys an attacker nothing. This
