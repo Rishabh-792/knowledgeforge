@@ -39,7 +39,7 @@ paths onto Azure OpenAI and Azure AI Search.
   endpoints; per-document ACL groups gate what search can even see.
 - **PII redaction** — regex redactor locally, Azure AI Language in cloud mode.
 - **Content safety** — keyword gate locally, Azure Content Safety in cloud mode.
-- **Ops-ready** — structured JSON logs with request IDs, `/healthz`, Docker,
+- **Operability** — structured JSON logs with request IDs, `/healthz`, Docker,
   Terraform for the full Azure footprint, CI/CD workflows.
 
 ## Architecture
@@ -275,7 +275,12 @@ answer text reproduces the exact expected phrase.
   Analytics + App Insights, and the App Service with managed-identity ACR
   pulls.
 
-## Roadmap
+## Status and roadmap
+
+**Complete at v1.0.0, not under active development.** This is a reference
+implementation, not a maintained dependency — see "Why this exists" above for
+what it does and does not claim to be. CI is green on Python 3.11/3.12/3.13.
+The items below are intent, not commitments.
 
 - Qdrant adapter for the `VectorStore` protocol (compose profile already stubs
   the service).
