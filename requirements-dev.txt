@@ -4,4 +4,4 @@ pytest-cov>=7.1.0
 httpx>=0.28.1
 # Pinned exactly: an unpinned floor let a new ruff release expand the default
 # ruleset and turn CI red. Dependabot proposes bumps as PRs that must pass CI.
-ruff==0.16.3
+ruff==0.16.4
