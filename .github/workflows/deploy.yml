@@ -36,7 +36,7 @@ jobs:
       # job hands the action a service principal, so the tag being mutable is
       # the difference between a supply-chain compromise and a non-event.
       # Dependabot maintains SHA pins, so this costs nothing ongoing.
-      - uses: azure/login@a65d910e8af852a8061c627c456678983e180302 # v2.2.0
+      - uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
